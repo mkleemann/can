@@ -7,16 +7,20 @@
 
 #include <avr/io.h>
 
+#define ___DEBUG_LEVEL___
+
 #include "spi/spi.h"
-#include "uart/uart.h"
+#include "util/util.h"
 
 int main(void)
 {
    // initialize the hardware SPI with default values set in spi/spi_config.h
    spi_master_init();
-   // initialize the USART
-   uart_init();
-
+   // initialize the USART in case of debugging
+   #ifdef ___DEBUG_LEVEL___
+   DEBUG_INIT();
+   DEBUG_PRINT("Testing!" CR);
+   #endif // ___DEBUG_LEVEL___
 
    while (1)
    {

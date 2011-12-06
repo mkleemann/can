@@ -45,6 +45,19 @@
 #define _GET_PORT(x,y)           x
 #define _GET_PIN(x,y)            y
 
+/* @brief check status of bits set
+ *
+ * BIT_IS_SET(value, bit)     checks if bit in value is set - returns (1<<bit) if true
+ * BIT_IS_UNSET(value, bit)   checks if bit in value is not set - returns (1<<bit) if true
+ */
+#define BIT_IS_SET(value, bit)   (value & (1<<bit))
+#define BIT_IS_UNSET(value, bit) (!(value & (1<<bit)))
+
+/* @brief access types
+ */
+typedef volatile uint8_t   vuint8_t
+typedef vuint8_t*          pvuint8_t
+
 /* @brief definition of debug printouts
  *
  */

@@ -11,13 +11,13 @@
 
 // define LEDs connected to your controller - name them as you wish, but keep
 // in mind that it matches the port/pin definitions below.
-enum eLED
+typedef enum
 {
    rxLED = 0,
    txLED,
    led3,
    led4
-};
+} eLED;
 
 // number of LEDS defined above in eLEDs
 #define NUM_OF_LEDS  4
@@ -31,10 +31,10 @@ typedef struct { pvuint8_t ddr;
 // define global array to access port pins directly via port address
 // dim1: port address
 // dim2: pin
-ledType ledPins[NUM_OF_LEDS] = { {&DDR(D), &PORT(D), 1},    // 0
-                                 {&DDR(D), &PORT(D), 2},
-                                 {&DDR(C), &PORT(C), 1},
-                                 {&DDR(C), &PORT(C), 2}     // NUM_OF_LEDS - 1
-                               };
+static ledType ledPins[NUM_OF_LEDS] = { {&DDR(D), &PORT(D), 1},    // 0
+                                        {&DDR(D), &PORT(D), 2},
+                                        {&DDR(C), &PORT(C), 1},
+                                        {&DDR(C), &PORT(C), 2}     // NUM_OF_LEDS - 1
+                                      };
 
 #endif /* LEDS_CONFIG_H_ */

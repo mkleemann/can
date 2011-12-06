@@ -20,7 +20,7 @@ void led_init()
    // set port pins to output
    for(i = 0; i < NUM_OF_LEDS; ++i)
    {
-      ledPins[i].ddr &= ~(1<<ledPins[i].pin)
+      *(ledPins[i].ddr) &= ~(1<<ledPins[i].pin);
    } /* end of for 0..NUM_OF_LEDS-1 */
 }
 
@@ -30,7 +30,7 @@ void led_init()
  */
 void led_on(eLED led)
 {
-   ledPins[led].port |= (1<<ledPins[led].pin);
+   *(ledPins[led].port) |= (1<<ledPins[led].pin);
 }
 
 /* @brief switches a led defined by a number off
@@ -39,7 +39,7 @@ void led_on(eLED led)
  */
 void led_off(eLED led)
 {
-   ledPins[led].port &= ~(1<<ledPins[led].pin);
+   *(ledPins[led].port) &= ~(1<<ledPins[led].pin);
 }
 
 /* @brief toggles a led defined by a number
@@ -48,6 +48,6 @@ void led_off(eLED led)
  */
 void led_toggle(eLED led)
 {
-   ledPins[led].port ^= (1<<ledPins[led].pin);
+   *(ledPins[led].port) ^= (1<<ledPins[led].pin);
 }
 

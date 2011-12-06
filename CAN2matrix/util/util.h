@@ -55,8 +55,8 @@
 
 /* @brief access types
  */
-typedef volatile uint8_t   vuint8_t
-typedef vuint8_t*          pvuint8_t
+typedef volatile uint8_t   vuint8_t;
+typedef vuint8_t*          pvuint8_t;
 
 /* @brief definition of debug printouts
  *

@@ -7,11 +7,13 @@
 
 #include <avr/io.h>
 
-#define ___DEBUG_LEVEL___
+//#define ___DEBUG_LEVEL___
+#define F_CPU   4000000UL
 
 #include "spi/spi.h"
 #include "util/util.h"
 #include "leds/leds.h"
+#include "util/delay.h"
 
 int main(void)
 {
@@ -23,8 +25,11 @@ int main(void)
    DEBUG_PRINT("Testing!" CR);
    #endif // ___DEBUG_LEVEL___
    led_init();
+   led_on(txLED);
    while (1)
    {
-      //TODO:: Please write your application code
+      led_toggle(rxLED);
+      led_toggle(txLED);
+	  _delay_ms(1000);
    }
 }

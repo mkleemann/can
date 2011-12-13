@@ -1,13 +1,13 @@
 /*
- * can.h
+ * can_mcp2515.h
  *
  * Created: 28.11.2011 18:15:12
  *  Author: MKleemann
  */
 
 
-#ifndef CAN_H_
-#define CAN_H_
+#ifndef CAN_MCP2515_H_
+#define CAN_MCP2515_H_
 
 #include <avr/io.h>
 #include "can_config_mcp2515.h"
@@ -51,4 +51,4 @@ int calcCNFx(uint16_t fosc,
              uint8_t* cnf3);
 
 
-#endif /* CAN_H_ */
+#endif /* CAN_MCP2515_H_ */

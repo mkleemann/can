@@ -20,7 +20,7 @@ void led_init()
    // set port pins to output
    for(i = 0; i < NUM_OF_LEDS; ++i)
    {
-      *(ledPins[i].ddr) &= ~(1<<ledPins[i].pin);
+      *(ledPins[i].ddr) |= (1<<ledPins[i].pin);
    } /* end of for 0..NUM_OF_LEDS-1 */
 }
 

@@ -21,6 +21,19 @@
     <AssemblyName>CAN2matrix</AssemblyName>
     <Name>CAN2matrix</Name>
     <RootNamespace>CAN2matrix</RootNamespace>
+    <avrtool>com.atmel.avrdbg.tool.simulator</avrtool>
+    <com_atmel_avrdbg_tool_simulator>
+      <ToolType xmlns="">com.atmel.avrdbg.tool.simulator</ToolType>
+      <ToolName xmlns="">AVR Simulator</ToolName>
+      <ToolNumber xmlns="">
+      </ToolNumber>
+      <Channel xmlns="">
+        <host>127.0.0.1</host>
+        <port>2445</port>
+        <ssl>False</ssl>
+      </Channel>
+    </com_atmel_avrdbg_tool_simulator>
+    <avrtoolinterface />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <ToolchainSettings>
@@ -74,7 +87,7 @@
     <Compile Include="CAN2matrix.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="can\can.h">
+    <Compile Include="can\can_mcp2515.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="can\can_config_mcp2515.h">

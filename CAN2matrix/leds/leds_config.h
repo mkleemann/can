@@ -14,11 +14,9 @@
 typedef enum
 {
    rxLED = 0,
-   txLED
+   txLED = 1,
+   NUM_OF_LEDS = 2         // always the last one
 } eLED;
-
-// number of LEDS defined above in eLEDs
-#define NUM_OF_LEDS  2
 
 // type of led control struct
 typedef struct { pvuint8_t ddr;

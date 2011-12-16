@@ -20,8 +20,8 @@
 void uart_init()
 {
    // set USART baud rate register
-   UBRRH = (uint8_t) (R_UBRR >> 8);
-   UBRRL = (uint8_t) (R_UBRR);
+   UBRRH = (R_UBRR >> 8);
+   UBRRL = (R_UBRR & 0xFF);
 
    // USART transmitter and receiver
    UCSRB = (1 << RXEN) | (1 << TXEN);

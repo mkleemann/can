@@ -39,6 +39,19 @@
    #error    SPI_PRESCALER must be one of the values of 2^n with n = 1..7!
 #endif
 
+/***************************************************************************/
+/* PORT PINS FOR SPI - here ATmega8                                        */
+/***************************************************************************/
+#define SCK_PORT            PORTB
+#define MISO_PORT           PORTB
+#define MOSI_PORT           PORTB
 
+#define SCK_DDR             DDRB
+#define MISO_DDR            DDRB
+#define MOSI_DDR            DDRB
+
+#define SCK_BIT             5
+#define MISO_BIT            4
+#define MOSI_BIT            3
 
 #endif /* SPI_CONFIG_H_ */

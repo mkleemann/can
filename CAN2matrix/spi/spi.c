@@ -9,9 +9,24 @@
 
 #include <avr/io.h>
 #include "spi.h"
+#include "../util/util.h"
+
+/* @brief setup of SPI pins
+ */
+void spi_pin_init(void)
+{
+   // set all SPI port pins to low
+   SCK_PORT  &= ~(1<<SCK_BIT);
+   MOSI_PORT &= ~(1<<MOSI_BIT);
+   MISO_PORT &= ~(1<<MISO_BIT);
+
+   // set SPI port pins
+   SCK_DDR  |=  (1<<SCK_BIT);
+   MOSI_DDR |=  (1<<MOSI_BIT);
+   MISO_DDR &= ~(1<<MISO_BIT);
+}
 
 /* @brief activate SPI interface as master
- *
  */
 void spi_master_init(void)
 {
@@ -21,7 +36,6 @@ void spi_master_init(void)
 }
 
 /* @brief activate SPI interface as slave
- *
  */
 void spi_slave_init(void)
 {
@@ -30,8 +44,9 @@ void spi_slave_init(void)
    SPSR = R_SPSR;
 }
 
-/* @brief writes (and reads!) a byte via hardware SPI
- *
+/* @brief  writes (and reads!) a byte via hardware SPI
+ * @param  data byte to send
+ * @return data byte received
  */
 uint8_t spi_putc(uint8_t data)
 {

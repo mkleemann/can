@@ -11,19 +11,23 @@
 
 #include "spi_config.h"
 
+/* @brief activate SPI pins of AVR
+ */
+void spi_pin_init(void);
+
+
 /* @brief activate SPI interface as master
- *
  */
 void spi_master_init(void);
 
 
 /* @brief activate SPI interface as slave
- *
  */
 void spi_slave_init(void);
 
-/* @brief writes (and reads!) a byte via hardware SPI
- *
+/* @brief  writes (and reads!) a byte via hardware SPI
+ * @param  data byte to send
+ * @return data byte received
  */
 uint8_t spi_putc(uint8_t data);
 

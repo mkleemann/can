@@ -11,6 +11,7 @@
 
 #include <avr/io.h>
 #include <stdbool.h>
+
 #include "../util/util.h"
 #include "can_config_mcp2515.h"
 

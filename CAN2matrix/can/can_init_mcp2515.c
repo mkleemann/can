@@ -5,7 +5,6 @@
  *  Author: MKleemann
  */
 
-
 #include <util/delay.h>
 
 #include "can_mcp2515.h"
@@ -65,13 +64,36 @@ bool can_init_mcp2515(eChipSelect chip,
       // wait for MCP2515 to reset itself
       _delay_ms(10);
       // setup configuration registers
-      write_register_mcp2515(chip, CNF1, mcp2515_cnf[bitrate][1]);
-      write_register_mcp2515(chip, CNF2, mcp2515_cnf[bitrate][2]);
-      write_register_mcp2515(chip, CNF3, mcp2515_cnf[bitrate][3]);
-      // TODO: ...noch weiter...
-
+      write_register_mcp2515(chip, CNF1, mcp2515_cnf[bitrate][0]);
+      write_register_mcp2515(chip, CNF2, mcp2515_cnf[bitrate][1]);
+      write_register_mcp2515(chip, CNF3, mcp2515_cnf[bitrate][2]);
+      // initialize RX interrupts
+      write_register_mcp2515(chip, CANINTE, (1<<RX1IE) | (1<<RX0IE));
+      // setup filters
+      // TODO: set filters correctly - now all messages are received
+      // set buffers to receive all messages
+      write_register_mcp2515(chip, RXB0CTRL, (1<<RXM1) | (1<<RXM0));
+      write_register_mcp2515(chip, RXB1CTRL, (1<<RXM1) | (1<<RXM0));
+      // remove all bits from reception filter masks to receive all messages
+      // buffer 0
+      write_register_mcp2515(chip, RXM0SIDH, 0);
+      write_register_mcp2515(chip, RXM0SIDL, 0);
+      write_register_mcp2515(chip, RXM0EID8, 0);
+      write_register_mcp2515(chip, RXM0EID0, 0);
+      // buffer 1
+      write_register_mcp2515(chip, RXM1SIDH, 0);
+      write_register_mcp2515(chip, RXM1SIDL, 0);
+      write_register_mcp2515(chip, RXM1EID8, 0);
+      write_register_mcp2515(chip, RXM1EID0, 0);
+      // setup PIN functions
+      // deactivate RXxBF pins and set to high impedance state
+      write_register_mcp2515(chip, BFPCTRL, 0);
+      // setup TXnRTS pins as input
+      write_register_mcp2515(chip, TXRTSCTRL, 0);
+      // set MCP2515 into normal operations mode (no longer configurable)
+      bit_modify_mcp2515(chip, CANCTRL(0), 0xE0, 0);
    } /* end of check CAN bitrates available and available MCP2515 devices */
-   return (retVal);
+   return(retVal);
 }
 
 
@@ -109,20 +131,20 @@ void write_register_mcp2515(eChipSelect   chip,
 uint8_t read_register_mcp2515(eChipSelect chip,
                               uint8_t     address)
 {
-    uint8_t data;
+   uint8_t data;
 
-    // /CS of MCP2515 to Low
-    *(csPins[chip].port) &= ~(1<<csPins[chip].pin);
+   // /CS of MCP2515 to Low
+   *(csPins[chip].port) &= ~(1<<csPins[chip].pin);
 
-    spi_putc(MCP2515_READ);
-    spi_putc(address);
-    // write something to SPI, so the byte can be read from SPI
-    data = spi_putc(0xFF);
+   spi_putc(MCP2515_READ);
+   spi_putc(address);
+   // write something to SPI, so the byte can be read from SPI
+   data = spi_putc(0xFF);
 
-    // /CS of MCP2515 to High
-    *(csPins[chip].port) |= (1<<csPins[chip].pin);
+   // /CS of MCP2515 to High
+   *(csPins[chip].port) |= (1<<csPins[chip].pin);
 
-    return data;
+   return (data);
 }
 
 
@@ -145,12 +167,12 @@ void bit_modify_mcp2515(eChipSelect chip,
    // /CS of MCP2515 to Low
    *(csPins[chip].port) &= ~(1<<csPins[chip].pin);
 
-    spi_putc(MCP2515_BITMODIFY);
-    spi_putc(address);
-    spi_putc(mask);
-    spi_putc(data);
+   spi_putc(MCP2515_BITMODIFY);
+   spi_putc(address);
+   spi_putc(mask);
+   spi_putc(data);
 
-    // /CS of MCP2515 to High
-    *(csPins[chip].port) |= (1<<csPins[chip].pin);
+   // /CS of MCP2515 to High
+   *(csPins[chip].port) |= (1<<csPins[chip].pin);
 }
 

@@ -46,10 +46,12 @@ typedef enum
 
 /* type of chip select control struct
  */
-typedef struct { pvuint8_t ddr;
-                 pvuint8_t port;
-                 uint8_t   pin;
-               } csType;
+typedef struct
+{
+   pvuint8_t ddr;
+   pvuint8_t port;
+   uint8_t   pin;
+} pinType;
 
 
 /**************************************************************************/
@@ -67,9 +69,15 @@ typedef struct { pvuint8_t ddr;
 
 /* define global array to access chip select pins directly via port address
  */
-static csType csPins[NUM_OF_MCP2515] = { {&DDR(B), &PORT(B), 0},    // 0
-                                         {&DDR(B), &PORT(B), 1}     // NUM_OF_MCP2515 - 1
-                                       };
+static pinType csPins[NUM_OF_MCP2515] = { {&DDR(B), &PORT(B), PINB0},    // 0
+                                          {&DDR(B), &PORT(B), PINB1}     // NUM_OF_MCP2515 - 1
+                                        };
+
+/* define global array to access RX interrupt pins directly via port address
+ */
+static pinType intPins[NUM_OF_MCP2515] = { {&DDR(D), &PORT(D), PIND2},    // 0
+                                           {&DDR(D), &PORT(D), PIND3}     // NUM_OF_MCP2515 - 1
+                                         };
 
 
 

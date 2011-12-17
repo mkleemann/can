@@ -13,7 +13,21 @@
 #include <stdbool.h>
 
 #include "../util/util.h"
+#include "can_defs_mcp2515.h"
 #include "can_config_mcp2515.h"
+
+/**************************************************************************/
+/* HELPERS                                                                */
+/**************************************************************************/
+// chip select pin settings
+#define SET_CS_PIN(chip)      *(csPins[chip].port) |=  (1<<csPins[chip].pin)
+#define RESET_CS_PIN(chip)    *(csPins[chip].port) &= ~(1<<csPins[chip].pin)
+#define SET_CS_OUTPUT(chip)   *(csPins[chip].ddr)  &= ~(1<<csPins[chip].pin)
+
+// interrupt pin settings
+#define SET_INT_PIN(chip)     *(intPins[chip].port) |=  (1<<intPins[chip].pin)
+#define RESET_INT_PIN(chip)   *(intPins[chip].port) &= ~(1<<intPins[chip].pin)
+#define SET_INT_INPUT(chip)   *(intPins[chip].ddr)  |=  (1<<intPins[chip].pin)
 
 
 /**************************************************************************/
@@ -50,7 +64,7 @@ typedef struct
 
 
 /**************************************************************************/
-/* FUNCTIONS                                                              */
+/* MCP2515 REGISTER/INIT FUNCTIONS                                        */
 /**************************************************************************/
 
 /*
@@ -104,7 +118,27 @@ void bit_modify_mcp2515(eChipSelect chip,
                         uint8_t     mask,
                         uint8_t     data);
 
+/************************************************************************/
+/* CAN FUNCTIONS                                                        */
+/************************************************************************/
 
+/*
+ * @brief  send message via CAN
+ *
+ * @param  chip select - chip to use
+ * @param  msg         - CAN message to send
+ */
+void can_send_message(eChipSelect   chip,
+                      can_t*         msg);
+
+/*
+ * @brief  get received CAN message
+ *
+ * @param  chip select - chip to use
+ * @param  msg         - CAN message received
+ */
+uint8_t can_get_message(eChipSelect chip,
+                        can_t*      msg);
 
 
 #endif /* CAN_MCP2515_H_ */

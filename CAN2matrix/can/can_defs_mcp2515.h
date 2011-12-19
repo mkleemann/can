@@ -192,4 +192,48 @@
 #define CLKPRE1               1
 #define CLKPRE0               0
 
+// command READ_STATUS
+#define TXB2CNTRL_TXREQ       6
+#define TXB1CNTRL_TXREQ       4
+#define TXB0CNTRL_TXREQ       2
+
+// load TX buffer addresses
+#define TXB2ADDR              4
+#define TXB1ADDR              2
+#define TXB0ADDR              0
+
+// RX buffer status
+// buffer information as bit - CANINTF.RXnIF bits are mapped to bits 7 and 6
+#define RXB_STATUSMASK        0x60
+#define RXB1                  7
+#define RXB0                  6
+// msg type as value - the extended ID bit is mapped to bit 4. The RTR bit
+// is mapped to bit 3
+#define RXB_EXT               4
+#define RXB_RTR               3
+#define RXB_MSGTYPEMASK       0x18
+#define RXB_STDFRAME          0x00
+#define RXB_STDREMOTEFRAME    0x01
+#define RXB_EXTDATAFRAME      0x02
+#define RXB_EXTREMOTEFRAME    0x03
+// filter match as value
+#define RXB_FILTERMATCHMASK   0x07
+#define RXB_RXF0              0x00
+#define RXB_RXF1              0x01
+#define RXB_RXF2              0x02
+#define RXB_RXF3              0x03
+#define RXB_RXF4              0x04
+#define RXB_RXF5              0x05
+#define RXB_RXF0_RO_RXB1      0x06
+#define RXB_RXF1_RO_RXB1      0x07
+
+
+// TXBnDLC and RXBxDLC
+#define RTR       6
+#define DLC3      3
+#define DLC2      2
+#define DLC1      1
+#define DLC0      0
+
+
 #endif /* CAN_DEFS_MCP2515_H_ */

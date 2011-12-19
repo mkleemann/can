@@ -11,8 +11,10 @@
 
 #include <avr/io.h>
 #include <stdbool.h>
+#include <util/delay.h>
 
 #include "../util/util.h"
+#include "../spi/spi.h"
 #include "can_defs_mcp2515.h"
 #include "can_config_mcp2515.h"
 
@@ -29,9 +31,11 @@
 #define RESET_INT_PIN(chip)   *(intPins[chip].port) &= ~(1<<intPins[chip].pin)
 #define SET_INT_INPUT(chip)   *(intPins[chip].ddr)  |=  (1<<intPins[chip].pin)
 
+// test interrupt pins (bool)
+#define IS_INT_SET(chip)      (0 != (*(intPins[chip].port) & (1<<intPins[chip].pin)))
 
 /**************************************************************************/
-/* TYPEDEFINITIONS                                                        */
+/* TYPE DEFINITIONS                                                       */
 /**************************************************************************/
 
 /* @brief CAN message format - no extended frame support yet
@@ -118,6 +122,17 @@ void bit_modify_mcp2515(eChipSelect chip,
                         uint8_t     mask,
                         uint8_t     data);
 
+
+/*
+ * @brief  reads MCP2515 status registers
+ *
+ * @param  chip select - chip to use
+ * @param  command     - read quick status command of MCP2515
+ * @return value of status register
+ */
+uint8_t read_status_mcp2515(eChipSelect  chip,
+                            uint8_t      command);
+
 /************************************************************************/
 /* CAN FUNCTIONS                                                        */
 /************************************************************************/
@@ -127,18 +142,32 @@ void bit_modify_mcp2515(eChipSelect chip,
  *
  * @param  chip select - chip to use
  * @param  msg         - CAN message to send
+ * @return address of buffer used to send
  */
-void can_send_message(eChipSelect   chip,
-                      can_t*         msg);
+uint8_t can_send_message(eChipSelect   chip,
+                         can_t*         msg);
 
 /*
  * @brief  get received CAN message
  *
  * @param  chip select - chip to use
  * @param  msg         - CAN message received
+ * @return filter match status + 1
  */
 uint8_t can_get_message(eChipSelect chip,
                         can_t*      msg);
+
+/* @brief  checks if any messages are received (via MCP2515's interrupt pin)
+ * @param  chip selected
+ * @return true if message was received
+ */
+bool can_check_message_received(eChipSelect chip);
+
+/* @brief  checks if any tx buffer is free to be loaded with a message
+ * @param  chip selected
+ * @return true if a buffer is free
+ */
+bool can_check_free_tx_buffers(eChipSelect chip);
 
 
 #endif /* CAN_MCP2515_H_ */

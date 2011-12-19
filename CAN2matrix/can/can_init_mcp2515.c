@@ -17,10 +17,7 @@
  *  Author: MKleemann
  */
 
-#include <util/delay.h>
-
 #include "can_mcp2515.h"
-#include "../spi/spi.h"
 
 
 
@@ -87,6 +84,12 @@ bool can_init_mcp2515(eChipSelect chip,
       write_register_mcp2515(chip, CNF1, mcp2515_cnf[bitrate][0]);
       write_register_mcp2515(chip, CNF2, mcp2515_cnf[bitrate][1]);
       write_register_mcp2515(chip, CNF3, mcp2515_cnf[bitrate][2]);
+
+      // test if MCP2515 is accessible and CNF set up correctly
+      if(read_register_mcp2515(chip, CNF1) != mcp2515_cnf[bitrate][0])
+      {
+         return false;
+      } /* end of if check if MCP2515 is accessible */
 
       // initialize RX interrupts
       write_register_mcp2515(chip, CANINTE, (1<<RX1IE) | (1<<RX0IE));
@@ -197,4 +200,31 @@ void bit_modify_mcp2515(eChipSelect chip,
    // /CS of MCP2515 to High
    SET_CS_PIN(chip);
 }
+
+/*
+ * @brief  reads MCP2515 status registers
+ *
+ * @param  chip select - chip to use
+ * @param  command     - read quick status command of MCP2515
+ * @return value of status register
+ */
+uint8_t read_status_mcp2515(eChipSelect  chip,
+                            uint8_t      command)
+{
+   uint8_t data;
+
+   // /CS of MCP2515 to Low
+   RESET_CS_PIN(chip);
+
+   // status commend to use
+   spi_putc(command);
+   // write something to SPI, so the byte can be read from SPI
+   data = spi_putc(0xFF);
+
+   // /CS of MCP2515 to High
+   SET_CS_PIN(chip);
+
+   return (data);
+}
+
 

@@ -114,7 +114,7 @@
     <Compile Include="can\can_sleep_mcp2515.c">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="can\can_write_mcp2515.c">
+    <Compile Include="can\can_send_mcp2515.c">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="leds\leds.c">

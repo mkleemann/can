@@ -227,4 +227,92 @@ uint8_t read_status_mcp2515(eChipSelect  chip,
    return (data);
 }
 
+/*
+ * @brief  put MCP2515 (and attached MCP2551) to sleep
+ *
+ * To put MCP2551 also to sleep connect RX1BF pin to RS pin of MCP2551. It
+ * is not always wanted to wakeup on any CAN activity. Sometimes, with
+ * multiple interfaces, the "master bus" should only trigger the wakeup,
+ * whereas the "slave" interfaces are woken up by wakeup signal from
+ * atmega.
+ *
+ * @param  chip select - chip to use
+ * @param  sleep mode  - when to activate MCP2515 again
+ */
+void mcp2515_sleep(eChipSelect   chip,
+                   uint8_t       mode)
+{
+   // put also the 2551 in standby mode
+   // for this, connect RX1BF to the RS pin of the 2551
+   bit_modify_mcp2515(chip, BFPCTRL, (1 << B1BFS), (1 << B1BFS));
+
+   // put the 2515 in sleep more
+   set_mode_mcp2515(chip, mode);
+
+   // enable generating an interrupt for wakeup when activity on bus
+   bit_modify_mcp2515(chip, CANINTE, (1 << WAKIE), (1 << WAKIE));
+}
+
+/*
+ * @brief  wakeup MCP2515 (and attached MCP2551) from sleep mode
+ *
+ * @param  chip select - chip to use
+ */
+void mcp2515_wakeup(eChipSelect   chip)
+{
+   // reset int enable and remove the interrupt flag
+   bit_modify_mcp2515(chip, CANINTE, (1 << WAKIE), 0);
+   bit_modify_mcp2515(chip, CANINTF, (1 << WAKIF), 0);
+
+   // wakeup the attached MCP2551
+   bit_modify_mcp2515(chip, BFPCTRL, (1 << B1BFS), 0);
+
+   // When we get out of sleep mode, we are in listen mode.
+   // Return now into normal mode again.
+   set_mode_mcp2515(chip, NORMAL_MODE);
+}
+
+/*
+ * @brief  set MCP2515 mode of operation
+ *
+ * @param  chip select - chip to use
+ * @param  mode of operation of MCP2515
+ */
+void set_mode_mcp2515(eChipSelect   chip,
+                      uint8_t       mode)
+{
+   uint8_t reg = NORMAL_MODE;
+
+   switch(mode & MODE_SELECT_MASK)
+   {
+      case SLEEP_MODE:
+      {
+         reg = (1 << REQOP0);
+         break;
+      } /* end of case SLEEP_MODE */
+      case LOOPBACK_MODE:
+      {
+         reg = (1 << REQOP1);
+         break;
+      } /* end of case LOOPBACK_MODE */
+      case LISTEN_ONLY_MODE:
+      {
+         reg = (1 << REQOP1) | (1 << REQOP0);
+         break;
+      } /* end of case LISTEN_ONLY_MODE */
+      case CONFIG_MODE:
+      {
+         reg = (1 << REQOP2);
+         break;
+      } /* end of case CONFIG_MODE */
+      // no default, since there is no other mode
+   } /* end of switch mode */
+
+   // set the mode selected above
+   bit_modify_mcp2515(chip, CANCTRL(0), MODE_SELECT_MASK, reg);
+   while ((read_register_mcp2515(chip, CANSTAT(0)) & MODE_SELECT_MASK) != reg)
+   {
+      // wait for the new mode to become active
+   }
+}
 

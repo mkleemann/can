@@ -29,7 +29,7 @@ typedef enum
 {
    CAN_BITRATE_100_KBPS = 0,
    CAN_BITRATE_125_KBPS = 1,
-   NUM_OF_CAN_BITRATES  = 3         // always the last one!
+   NUM_OF_CAN_BITRATES  = 2         // always the last one!
 } eCanBitRate;
 
 /* @brief index of MCP2515 chips connected
@@ -41,10 +41,10 @@ typedef enum
 {
    CAN_CHIP1      = 0,
    CAN_CHIP2      = 1,
-   NUM_OF_MCP2515 = 3               // always the last one!
+   NUM_OF_MCP2515 = 2               // always the last one!
 } eChipSelect;
 
-/* type of chip select control struct
+/* type of atmega pin control struct
  */
 typedef struct
 {
@@ -63,9 +63,6 @@ typedef struct
 #ifndef MCP_CLOCK          // clock rate of MCP2515
    #define MCP_CLOCK       4000000UL
 #endif // MCP_CLOCK
-
-/* @brief Chip Select pins of the chips set above
- */
 
 /* define global array to access chip select pins directly via port address
  */

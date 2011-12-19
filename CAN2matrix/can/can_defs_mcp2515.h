@@ -235,5 +235,19 @@
 #define DLC1      1
 #define DLC0      0
 
+/**************************************************************************/
+/* MCP2515 MODES OF OPERATION                                             */
+/**************************************************************************/
+#define MODE_SELECT_MASK      ((1 << REQOP2) | (1 << REQOP1) | (1 << REQOP0))
+#define NORMAL_MODE           0
+#define SLEEP_MODE            (1 << REQOP0)
+#define LOOPBACK_MODE         (1 << REQOP1)
+#define LISTEN_ONLY_MODE      (1 << REQOP0) | (1 << REQOP1)
+#define CONFIG_MODE           (1 << REQOP2)
+// now some specials not used by MCP2515, but internally
+#define SLEEP_WITH_WAKEUP     SLEEP_MODE
+#define SLEEP_WO_WAKEUP       (SLEEP_MODE | 0x01)
+
+
 
 #endif /* CAN_DEFS_MCP2515_H_ */

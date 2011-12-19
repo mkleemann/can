@@ -133,6 +133,37 @@ void bit_modify_mcp2515(eChipSelect chip,
 uint8_t read_status_mcp2515(eChipSelect  chip,
                             uint8_t      command);
 
+/*
+ * @brief  put MCP2515 (and attached MCP2551) to sleep
+ *
+ * To put MCP2551 also to sleep connect RX1BF pin to RS pin of MCP2551. It
+ * is not always wanted to wakeup on any CAN activity. Sometimes, with
+ * multiple interfaces, the "master bus" should only trigger the wakeup,
+ * whereas the "slave" interfaces are woken up by wakeup signal from
+ * atmega.
+ *
+ * @param  chip select - chip to use
+ * @param  sleep mode  - when to activate MCP2515 again
+ */
+void mcp2515_sleep(eChipSelect   chip,
+                   uint8_t       mode);
+
+/*
+ * @brief  wakeup MCP2515 (and attached MCP2551) from sleep mode
+ *
+ * @param  chip select - chip to use
+ */
+void mcp2515_wakeup(eChipSelect   chip);
+
+/*
+ * @brief  set MCP2515 mode of operation
+ *
+ * @param  chip select - chip to use
+ * @param  mode of operation of MCP2515
+ */
+void set_mode_mcp2515(eChipSelect   chip,
+                      uint8_t       mode);
+
 /************************************************************************/
 /* CAN FUNCTIONS                                                        */
 /************************************************************************/
@@ -168,6 +199,7 @@ bool can_check_message_received(eChipSelect chip);
  * @return true if a buffer is free
  */
 bool can_check_free_tx_buffers(eChipSelect chip);
+
 
 
 #endif /* CAN_MCP2515_H_ */

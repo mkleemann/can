@@ -14,27 +14,27 @@
  * Start with 8 as default, which is always a good value. ;-)
  */
 #ifndef SPI_PRESCALER
-   #define SPI_PRESCALER   8
+   #define SPI_PRESCALER      8
 #endif
 
 // now start calculating prescaler values. Start with SPI2X bit...
 #if (SPI_PRESCALER == 2) || (SPI_PRESCALER == 8) || (SPI_PRESCALER == 32) || (SPI_PRESCALER == 64)
-   #define R_SPSR          (1<<SPI2X)
-   #define SPI_PRESCALER_  (SPI_PRESCALER * 2)  // to make it easier in the next step
+   #define R_SPSR             (1 << SPI2X)
+   #define SPI_PRESCALER_     (SPI_PRESCALER * 2)  // to make it easier in the next step
 #else
-   #define R_SPSR       0
-   #define SPI_PRESCALER_  SPI_PRESCALER
+   #define R_SPSR             0
+   #define SPI_PRESCALER_     SPI_PRESCALER
 #endif
 
 // ... and add SPR0/1.
 #if (SPI_PRESCALER_ == 4)
-   #define  R_SPCR   0
+   #define  R_SPCR            0
 #elif (SPI_PRESCALER_ == 16)
-   #define  R_SPCR   (1<<SPR0)
+   #define  R_SPCR            (1 << SPR0)
 #elif (SPI_PRESCALER_ == 64)
-   #define  R_SPCR   (1<<SPR1)
+   #define  R_SPCR            (1 << SPR1)
 #elif (SPI_PRESCALER_ == 128)
-   #define  R_SPCR   (1<<SPR1) | (1<<SPR0)
+   #define  R_SPCR            (1 << SPR1) | (1 << SPR0)
 #else
    #error    SPI_PRESCALER must be one of the values of 2^n with n = 1..7!
 #endif
@@ -42,16 +42,42 @@
 /***************************************************************************/
 /* PORT PINS FOR SPI - here ATmega8                                        */
 /***************************************************************************/
-#define SCK_PORT            PORTB
-#define MISO_PORT           PORTB
-#define MOSI_PORT           PORTB
+#ifndef SCK_PORT
+   #define SCK_PORT            PORTB
+#endif
 
-#define SCK_DDR             DDRB
-#define MISO_DDR            DDRB
-#define MOSI_DDR            DDRB
+#ifndef MISO_PORT
+   #define MISO_PORT           PORTB
+#endif
 
-#define SCK_BIT             5
-#define MISO_BIT            4
-#define MOSI_BIT            3
+#ifndef MOSI_PORT
+   #define MOSI_PORT           PORTB
+#endif
+
+
+#ifndef SCK_DDR
+   #define SCK_DDR             DDRB
+#endif
+
+#ifndef MISO_DDR
+   #define MISO_DDR            DDRB
+#endif
+
+#ifndef MOSI_DDR
+   #define MOSI_DDR            DDRB
+#endif
+
+
+#ifndef SCK_BIT
+   #define SCK_BIT             5
+#endif
+
+#ifndef MISO_BIT
+   #define MISO_BIT            4
+#endif
+
+#ifndef MOSI_BIT
+   #define MOSI_BIT            3
+#endif
 
 #endif /* SPI_CONFIG_H_ */

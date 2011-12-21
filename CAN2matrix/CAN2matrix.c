@@ -7,29 +7,41 @@
 
 #include <avr/io.h>
 
-//#define ___DEBUG_LEVEL___
-#define F_CPU   4000000UL
+#include <util/delay.h>
+#include <stdbool.h>
 
-#include "spi/spi.h"
 #include "util/util.h"
-#include "leds/leds.h"
-#include "util/delay.h"
+#include "spi/spi.h"
+#include "can/can_mcp2515.h"
 
 int main(void)
 {
+   // error LED output
+   DDRC |= (1 << PINC2) | (1 << PINC1) | (1 << PINC0);
+   PORTC &= ~(1 << PINC0);
    // initialize the hardware SPI with default values set in spi/spi_config.h
+   spi_pin_init();
    spi_master_init();
-   // initialize the USART in case of debugging
-   #ifdef ___DEBUG_LEVEL___
-   DEBUG_INIT();
-   DEBUG_PRINT("Testing!" CR);
-   #endif // ___DEBUG_LEVEL___
-   led_init();
-   led_on(txLED);
-   while (1)
+   // init can interface 1
+   if (false == can_init_mcp2515(CAN_CHIP1, CAN_BITRATE_125_KBPS))
    {
-      led_toggle(rxLED);
-      led_toggle(txLED);
-	  _delay_ms(1000);
+      PORTC &= ~(1 << PINC2); // error
    }
+   else
+   {
+      while (1)
+      {
+         if(can_check_message_received(CAN_CHIP1))
+         {
+            can_t msg;
+            // try to read message
+            if(can_get_message(CAN_CHIP1, &msg))
+            {
+               msg.msgId += 10;
+               can_send_message(CAN_CHIP1, &msg);
+            } /* end of if message read */
+         } /* end of if check can message received */
+      }
+   } /* end of else do it */
 }
+

@@ -30,20 +30,25 @@
 #define RESET_PIN(x)             _RESET_PIN(x)
 #define TOGGLE_PIN(x)            _TOGGLE_PIN(x)
 
+#define IS_SET(x)                _IS_SET(x)
+
 // NOTE: To get the arguments from definitions described above.
 #define GET_PORT(x)              _GET_PORT(x)
 #define GET_PIN(x)               _GET_PIN(x)
 
 // NOTE: Here the part to split the arguments to the real meaning behind.
-#define _PIN_SET_INPUT(x,y)      DDR(x) |= (1<<y)
-#define _PIN_SET_OUTPUT(x,y)     DDR(x) &= ~(1<<y)
+#define _PIN_SET_INPUT(x,y)      DDR(x) &= ~(1<<y)
+#define _PIN_SET_OUTPUT(x,y)     DDR(x) |= (1<<y)
 
-#define _SET_PIN(x,y)            PORT(x) |= (1<<y))
+#define _SET_PIN(x,y)            PORT(x) |= (1<<y)
 #define _RESET_PIN(x,y)          PORT(x) &= ~(1<<y)
 #define _TOGGLE_PIN(x,y)         PORT(x) ^= (1<<y)
 
 #define _GET_PORT(x,y)           x
 #define _GET_PIN(x,y)            y
+
+// almost same as BIT_IS_SET, but as bool
+#define _IS_SET(x,y)              (0 != (PORT(x) & (1<<y)))
 
 /* @brief check status of bits set
  *

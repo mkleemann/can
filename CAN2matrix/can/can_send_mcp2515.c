@@ -59,7 +59,7 @@ uint8_t can_send_message(eChipSelect   chip,
    // the first address, it put the write pointer to the next byte - and
    // in most cases - the next register to be written. This fasten up the
    // message handling.
-   RESET_CS_PIN(chip);
+   unset_chip_select(chip);
    spi_putc(MCP2515_LOAD_TX | address);
 
    // standard msg id
@@ -87,16 +87,16 @@ uint8_t can_send_message(eChipSelect   chip,
          spi_putc(msg->data[i]);             // TXBxDn
       }
    }
-   SET_CS_PIN(chip);
+   set_chip_select(chip);
 
    // wait a little before sending the next command
    _delay_us(1);
 
    // request to send message in buffer written above
-   RESET_CS_PIN(chip);
+   unset_chip_select(chip);
    address = (address == 0) ? 1 : address;   // set correct RTS bit (0 -> 1)
    spi_putc(MCP2515_RTS | address);
-   SET_CS_PIN(chip);
+   set_chip_select(chip);
 
    return address;
 }

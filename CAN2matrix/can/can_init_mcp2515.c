@@ -62,21 +62,17 @@ bool can_init_mcp2515(eChipSelect chip,
    if ((bitrate < NUM_OF_CAN_BITRATES) && (chip < NUM_OF_MCP2515))
    {
       // set interrupt pins
-      SET_INT_INPUT(chip);
-      SET_INT_PIN(chip);
-
-      // set chip select pins to high to get transition for MCP2515
-      SET_CS_PIN(chip);
-      // set direction of /CS pins to output
-      SET_CS_OUTPUT(chip);
+      setup_interrupt_pins(chip);
+      // set chip select pins
+      setup_cs_pins(chip);
       // wait for MCP2515 to get pin status
       _delay_us(10);
 
       // software reset MCP2515 to change it to configuration mode
-      RESET_CS_PIN(chip);
+      unset_chip_select(chip);
       spi_putc(MCP2515_RESET);
       _delay_ms(1);  // wait a little bit
-      SET_CS_PIN(chip);
+      set_chip_select(chip);
       // wait for MCP2515 to reset itself
       _delay_us(10);
 
@@ -90,6 +86,9 @@ bool can_init_mcp2515(eChipSelect chip,
       {
          return false;
       } /* end of if check if MCP2515 is accessible */
+
+      // assume it works
+      retVal = true;
 
       // initialize RX interrupts
       write_register_mcp2515(chip, CANINTE, (1<<RX1IE) | (1<<RX0IE));
@@ -135,14 +134,14 @@ void write_register_mcp2515(eChipSelect   chip,
                             uint8_t       data)
 {
    // /CS of MCP2515 to Low
-   RESET_CS_PIN(chip);
+   unset_chip_select(chip);
 
    spi_putc(MCP2515_WRITE);
    spi_putc(address);
    spi_putc(data);
 
    // /CS of MCP2515 to High
-   SET_CS_PIN(chip);
+   set_chip_select(chip);
 }
 
 
@@ -159,7 +158,7 @@ uint8_t read_register_mcp2515(eChipSelect chip,
    uint8_t data;
 
    // /CS of MCP2515 to Low
-   RESET_CS_PIN(chip);
+   unset_chip_select(chip);
 
    spi_putc(MCP2515_READ);
    spi_putc(address);
@@ -167,7 +166,7 @@ uint8_t read_register_mcp2515(eChipSelect chip,
    data = spi_putc(0xFF);
 
    // /CS of MCP2515 to High
-   SET_CS_PIN(chip);
+   set_chip_select(chip);
 
    return (data);
 }
@@ -190,7 +189,7 @@ void bit_modify_mcp2515(eChipSelect chip,
                         uint8_t     data)
 {
    // /CS of MCP2515 to Low
-   RESET_CS_PIN(chip);
+   unset_chip_select(chip);
 
    spi_putc(MCP2515_BITMODIFY);
    spi_putc(address);
@@ -198,7 +197,7 @@ void bit_modify_mcp2515(eChipSelect chip,
    spi_putc(data);
 
    // /CS of MCP2515 to High
-   SET_CS_PIN(chip);
+   set_chip_select(chip);
 }
 
 /*
@@ -214,7 +213,7 @@ uint8_t read_status_mcp2515(eChipSelect  chip,
    uint8_t data;
 
    // /CS of MCP2515 to Low
-   RESET_CS_PIN(chip);
+   unset_chip_select(chip);
 
    // status commend to use
    spi_putc(command);
@@ -222,7 +221,7 @@ uint8_t read_status_mcp2515(eChipSelect  chip,
    data = spi_putc(0xFF);
 
    // /CS of MCP2515 to High
-   SET_CS_PIN(chip);
+   set_chip_select(chip);
 
    return (data);
 }
@@ -314,5 +313,84 @@ void set_mode_mcp2515(eChipSelect   chip,
    {
       // wait for the new mode to become active
    }
+}
+
+/***************************************************************************/
+
+/* @brief setting up the interrupt pins
+ * @param chip selected
+ */
+void setup_interrupt_pins(eChipSelect chip)
+{
+   if(CAN_CHIP1 == chip)
+   {
+      // set interrupt pin to input
+      PIN_SET_INPUT(CHIP1_INT_PIN);
+      // set /INT to high to get transitions
+      SET_PIN(CHIP1_INT_PIN);
+   } /* end of if CAN1 */
+   else
+   {
+      // set interrupt pin to input
+      PIN_SET_INPUT(CHIP2_INT_PIN);
+      // set /INT to high to get transitions
+      SET_PIN(CHIP2_INT_PIN);
+   } /* end of else CAN 2 */
+}
+
+/* @brief setting up the chip select pins
+ * @param chip selected
+ */
+void setup_cs_pins(eChipSelect chip)
+{
+   if(CAN_CHIP1 == chip)
+   {
+      // set chip select pins to high to get transition for MCP2515
+      SET_PIN(CHIP1_CS_PIN);
+      // set /CS to output
+      PIN_SET_OUTPUT(CHIP1_CS_PIN);
+   } /* end of if CAN1 */
+   else
+   {
+      // set chip select pins to high to get transition for MCP2515
+      SET_PIN(CHIP2_CS_PIN);
+      // set /CS to output
+      PIN_SET_OUTPUT(CHIP2_CS_PIN);
+   } /* end of else CAN 2 */
+}
+
+
+/* @brief set chip select for the right chip
+ * @param chip selected
+ */
+void set_chip_select(eChipSelect chip)
+{
+   if(CAN_CHIP1 == chip)
+   {
+      // set chip select pins to high to get transition for MCP2515
+      SET_PIN(CHIP1_CS_PIN);
+   } /* end of if CAN1 */
+   else
+   {
+      // set chip select pins to high to get transition for MCP2515
+      SET_PIN(CHIP2_CS_PIN);
+   } /* end of else CAN 2 */
+}
+
+/* @brief unset chip select for the right chip
+ * @param chip selected
+ */
+void unset_chip_select(eChipSelect chip)
+{
+   if(CAN_CHIP1 == chip)
+   {
+      // set chip select pins to high to get transition for MCP2515
+      RESET_PIN(CHIP1_CS_PIN);
+   } /* end of if CAN1 */
+   else
+   {
+      // set chip select pins to high to get transition for MCP2515
+      RESET_PIN(CHIP2_CS_PIN);
+   } /* end of else CAN 2 */
 }
 

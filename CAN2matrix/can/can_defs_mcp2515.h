@@ -242,7 +242,7 @@
 #define NORMAL_MODE           0
 #define SLEEP_MODE            (1 << REQOP0)
 #define LOOPBACK_MODE         (1 << REQOP1)
-#define LISTEN_ONLY_MODE      (1 << REQOP0) | (1 << REQOP1)
+#define LISTEN_ONLY_MODE      (1 << REQOP1) | (1 << REQOP0)
 #define CONFIG_MODE           (1 << REQOP2)
 // now some specials not used by MCP2515, but internally
 #define SLEEP_WITH_WAKEUP     SLEEP_MODE

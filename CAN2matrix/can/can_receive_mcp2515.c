@@ -14,7 +14,7 @@
 bool can_check_message_received(eChipSelect chip)
 {
    // check if interrupt pin is (logical not) set - interrupt available
-   return (!IS_INT_SET(chip));
+   return (!((CAN_CHIP1 == chip) ? IS_SET(CHIP1_INT_PIN) : IS_SET(CHIP2_INT_PIN)));
 }
 
 /*
@@ -46,7 +46,7 @@ uint8_t can_get_message(eChipSelect chip,
       return 0;
    }
 
-   RESET_CS_PIN(chip);
+   unset_chip_select(chip);
 
    // read bytes from address
    spi_putc(address);
@@ -69,7 +69,7 @@ uint8_t can_get_message(eChipSelect chip,
    {
       msg->data[i] = spi_putc(0xFF);
    }
-   SET_CS_PIN(chip);
+   set_chip_select(chip);
 
    // clear interrupt flag
    if (BIT_IS_SET(status, RXB0))

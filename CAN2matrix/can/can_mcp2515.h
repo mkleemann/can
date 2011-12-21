@@ -19,24 +19,21 @@
 #include "can_config_mcp2515.h"
 
 /**************************************************************************/
-/* HELPERS                                                                */
-/**************************************************************************/
-// chip select pin settings
-#define SET_CS_PIN(chip)      *(csPins[chip].port) |=  (1<<csPins[chip].pin)
-#define RESET_CS_PIN(chip)    *(csPins[chip].port) &= ~(1<<csPins[chip].pin)
-#define SET_CS_OUTPUT(chip)   *(csPins[chip].ddr)  &= ~(1<<csPins[chip].pin)
-
-// interrupt pin settings
-#define SET_INT_PIN(chip)     *(intPins[chip].port) |=  (1<<intPins[chip].pin)
-#define RESET_INT_PIN(chip)   *(intPins[chip].port) &= ~(1<<intPins[chip].pin)
-#define SET_INT_INPUT(chip)   *(intPins[chip].ddr)  |=  (1<<intPins[chip].pin)
-
-// test interrupt pins (bool)
-#define IS_INT_SET(chip)      (0 != (*(intPins[chip].port) & (1<<intPins[chip].pin)))
-
-/**************************************************************************/
 /* TYPE DEFINITIONS                                                       */
 /**************************************************************************/
+
+/* @brief index of internal CAN bitrate setup
+ *
+ * Any adaption here may need to adapt the source. If you keep the naming
+ * scheme like CAN_BITRATE_xxx_KBPS, it's easier because of existing macros.
+ */
+typedef enum
+{
+   CAN_BITRATE_100_KBPS = 0,
+   CAN_BITRATE_125_KBPS = 1,
+   NUM_OF_CAN_BITRATES  = 2         // always the last one!
+} eCanBitRate;
+
 
 /* @brief CAN message format - no extended frame support yet
  */
@@ -200,6 +197,28 @@ bool can_check_message_received(eChipSelect chip);
  */
 bool can_check_free_tx_buffers(eChipSelect chip);
 
+/**************************************************************************/
+/* HELPERS                                                                */
+/**************************************************************************/
 
+/* @brief setting up the interrupt pins
+ * @param chip selected
+ */
+void setup_interrupt_pins(eChipSelect chip);
+
+/* @brief setting up the chip select pins
+ * @param chip selected
+ */
+void setup_cs_pins(eChipSelect chip);
+
+/* @brief set chip select for the right chip
+ * @param chip selected
+ */
+void set_chip_select(eChipSelect chip);
+
+/* @brief unset chip select for the right chip
+ * @param chip selected
+ */
+void unset_chip_select(eChipSelect chip);
 
 #endif /* CAN_MCP2515_H_ */

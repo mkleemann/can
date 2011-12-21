@@ -20,18 +20,6 @@
 /*       same. You may need to adapt the source - so be careful.          */
 /**************************************************************************/
 
-/* @brief index of internal CAN bitrate setup
- *
- * Any adaption here may need to adapt the source. If you keep the naming
- * scheme like CAN_BITRATE_xxx_KBPS, it's easier because of existing macros.
- */
-typedef enum
-{
-   CAN_BITRATE_100_KBPS = 0,
-   CAN_BITRATE_125_KBPS = 1,
-   NUM_OF_CAN_BITRATES  = 2         // always the last one!
-} eCanBitRate;
-
 /* @brief index of MCP2515 chips connected
  *
  * Any adaption here may need to adapt the source. If you keep the naming
@@ -44,38 +32,25 @@ typedef enum
    NUM_OF_MCP2515 = 2               // always the last one!
 } eChipSelect;
 
-/* type of atmega pin control struct
- */
-typedef struct
-{
-   pvuint8_t ddr;
-   pvuint8_t port;
-   uint8_t   pin;
-} pinType;
-
 
 /**************************************************************************/
 /* SETTINGS                                                               */
 /**************************************************************************/
 
 /* @brief Oscillator frequency used for MCP2515
+ *
+ * NOT YET USED!
  */
 #ifndef MCP_CLOCK          // clock rate of MCP2515
    #define MCP_CLOCK       4000000UL
 #endif // MCP_CLOCK
 
-/* define global array to access chip select pins directly via port address
+/* @brief Port definitions to access the two MCP2515
  */
-static pinType csPins[NUM_OF_MCP2515] = { {&DDR(B), &PORT(B), PINB0},    // 0
-                                          {&DDR(B), &PORT(B), PINB1}     // NUM_OF_MCP2515 - 1
-                                        };
+#define CHIP1_CS_PIN       B,2
+#define CHIP1_INT_PIN      D,2
 
-/* define global array to access RX interrupt pins directly via port address
- */
-static pinType intPins[NUM_OF_MCP2515] = { {&DDR(D), &PORT(D), PIND2},    // 0
-                                           {&DDR(D), &PORT(D), PIND3}     // NUM_OF_MCP2515 - 1
-                                         };
-
-
+#define CHIP2_CS_PIN       B,1
+#define CHIP2_INT_PIN      D,3
 
 #endif /* CAN_CONFIG_MCP2515_H_ */

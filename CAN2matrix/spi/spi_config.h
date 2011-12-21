@@ -42,42 +42,16 @@
 /***************************************************************************/
 /* PORT PINS FOR SPI - here ATmega8                                        */
 /***************************************************************************/
-#ifndef SCK_PORT
-   #define SCK_PORT            PORTB
+#ifndef ATMEGA16_SIMULATOR      // no debugging, ATmega8
+#define P_SCK                 B,5
+#define P_MISO                B,4
+#define P_MOSI                B,3
 #endif
 
-#ifndef MISO_PORT
-   #define MISO_PORT           PORTB
-#endif
-
-#ifndef MOSI_PORT
-   #define MOSI_PORT           PORTB
-#endif
-
-
-#ifndef SCK_DDR
-   #define SCK_DDR             DDRB
-#endif
-
-#ifndef MISO_DDR
-   #define MISO_DDR            DDRB
-#endif
-
-#ifndef MOSI_DDR
-   #define MOSI_DDR            DDRB
-#endif
-
-
-#ifndef SCK_BIT
-   #define SCK_BIT             5
-#endif
-
-#ifndef MISO_BIT
-   #define MISO_BIT            4
-#endif
-
-#ifndef MOSI_BIT
-   #define MOSI_BIT            3
+#ifdef ATMEGA16_SIMULATOR       // debugging in simulator as ATmega16 (size of debug code)
+#define P_SCK                 B,7
+#define P_MISO                B,6
+#define P_MOSI                B,5
 #endif
 
 #endif /* SPI_CONFIG_H_ */

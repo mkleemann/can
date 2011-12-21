@@ -16,14 +16,14 @@
 void spi_pin_init(void)
 {
    // set all SPI port pins to low
-   SCK_PORT  &= ~(1<<SCK_BIT);
-   MOSI_PORT &= ~(1<<MOSI_BIT);
-   MISO_PORT &= ~(1<<MISO_BIT);
+   RESET_PIN(P_SCK);
+   RESET_PIN(P_MOSI);
+   RESET_PIN(P_MISO);
 
-   // set SPI port pins
-   SCK_DDR  |=  (1<<SCK_BIT);
-   MOSI_DDR |=  (1<<MOSI_BIT);
-   MISO_DDR &= ~(1<<MISO_BIT);
+   // set SPI port directions
+   PIN_SET_OUTPUT(P_SCK);
+   PIN_SET_OUTPUT(P_MOSI);
+   PIN_SET_INPUT(P_MISO);
 }
 
 /* @brief activate SPI interface as master

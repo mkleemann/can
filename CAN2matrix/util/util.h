@@ -47,7 +47,7 @@
 #define _GET_PORT(x,y)           x
 #define _GET_PIN(x,y)            y
 
-// almost same as BIT_IS_SET, but as bool
+// almost same as BIT_IS_SET, but as bool with PORT, PIN settings
 #define _IS_SET(x,y)              (0 != (PORT(x) & (1<<y)))
 
 /* @brief check status of bits set

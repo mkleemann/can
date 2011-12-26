@@ -31,7 +31,7 @@ void spi_pin_init(void)
 void spi_master_init(void)
 {
    // enable SPI as master; the MSB of the data word is transmitted first
-   SPCR = (1<<SPE) | (1<<MSTR) | R_SPCR;
+   SPCR = (1 << SPE) | (1 << MSTR) | R_SPCR;
    SPSR = R_SPSR;
 }
 
@@ -40,7 +40,7 @@ void spi_master_init(void)
 void spi_slave_init(void)
 {
    // enable SPI as slave; the MSB of the data word is transmitted first
-   SPCR = (1<<SPE);
+   SPCR = (1 << SPE);
    SPSR = R_SPSR;
 }
 

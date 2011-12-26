@@ -66,7 +66,7 @@ bool can_init_mcp2515(eChipSelect chip,
       // set chip select pins
       setup_cs_pins(chip);
       // wait for MCP2515 to get pin status
-      _delay_us(10);
+      _delay_ms(10);
 
       // software reset MCP2515 to change it to configuration mode
       unset_chip_select(chip);
@@ -74,7 +74,7 @@ bool can_init_mcp2515(eChipSelect chip,
       _delay_ms(1);  // wait a little bit
       set_chip_select(chip);
       // wait for MCP2515 to reset itself
-      _delay_us(10);
+      _delay_ms(10);
 
       // setup configuration registers
       write_register_mcp2515(chip, CNF1, mcp2515_cnf[bitrate][0]);
@@ -93,23 +93,9 @@ bool can_init_mcp2515(eChipSelect chip,
       // initialize RX interrupts
       write_register_mcp2515(chip, CANINTE, (1<<RX1IE) | (1<<RX0IE));
 
-      // setup filters
+      // clear filters
       // TODO: set filters correctly - now all messages are received
-      // set buffers to receive all messages
-      write_register_mcp2515(chip, RXB0CTRL, (1<<RXM1) | (1<<RXM0));
-      write_register_mcp2515(chip, RXB1CTRL, (1<<RXM1) | (1<<RXM0));
-
-      // remove all bits from reception filter masks to receive all messages
-      // buffer 0
-      write_register_mcp2515(chip, RXM0SIDH, 0);
-      write_register_mcp2515(chip, RXM0SIDL, 0);
-      write_register_mcp2515(chip, RXM0EID8, 0);
-      write_register_mcp2515(chip, RXM0EID0, 0);
-      // buffer 1
-      write_register_mcp2515(chip, RXM1SIDH, 0);
-      write_register_mcp2515(chip, RXM1SIDL, 0);
-      write_register_mcp2515(chip, RXM1EID8, 0);
-      write_register_mcp2515(chip, RXM1EID0, 0);
+      clear_filters(chip);
 
       // setup PIN functions
       // deactivate RXxBF pins and set to high impedance state
@@ -311,7 +297,7 @@ void set_mode_mcp2515(eChipSelect   chip,
    bit_modify_mcp2515(chip, CANCTRL(0), MODE_SELECT_MASK, reg);
    while ((read_register_mcp2515(chip, CANSTAT(0)) & MODE_SELECT_MASK) != reg)
    {
-      // wait for the new mode to become active
+      // wait for the new mode to become active as advised in datasheet
    }
 }
 
@@ -392,5 +378,59 @@ void unset_chip_select(eChipSelect chip)
       // set chip select pins to high to get transition for MCP2515
       RESET_PIN(CHIP2_CS_PIN);
    } /* end of else CAN 2 */
+}
+
+/**
+ * @brief clear filters
+ * @param chip selected
+ */
+void clear_filters(eChipSelect chip)
+{
+   // set buffers to receive all messages
+   write_register_mcp2515(chip, RXB0CTRL, (1<<RXM1) | (1<<RXM0));
+   write_register_mcp2515(chip, RXB1CTRL, (1<<RXM1) | (1<<RXM0));
+
+   // TODO: use possibility to set registers in a row
+   // remove all bits from reception filter masks to receive all messages
+   // buffer 0
+   write_register_mcp2515(chip, RXM0SIDH, 0);
+   write_register_mcp2515(chip, RXM0SIDL, 0);
+   write_register_mcp2515(chip, RXM0EID8, 0);
+   write_register_mcp2515(chip, RXM0EID0, 0);
+   // buffer 1
+   write_register_mcp2515(chip, RXM1SIDH, 0);
+   write_register_mcp2515(chip, RXM1SIDL, 0);
+   write_register_mcp2515(chip, RXM1EID8, 0);
+   write_register_mcp2515(chip, RXM1EID0, 0);
+   // filter 0
+   write_register_mcp2515(chip, RXF0SIDH, 0);
+   write_register_mcp2515(chip, RXF0SIDL, 0);
+   write_register_mcp2515(chip, RXF0EID8, 0);
+   write_register_mcp2515(chip, RXF0EID0, 0);
+   // filter 1
+   write_register_mcp2515(chip, RXF1SIDH, 0);
+   write_register_mcp2515(chip, RXF1SIDL, 0);
+   write_register_mcp2515(chip, RXF1EID8, 0);
+   write_register_mcp2515(chip, RXF1EID0, 0);
+   // filter 2
+   write_register_mcp2515(chip, RXF2SIDH, 0);
+   write_register_mcp2515(chip, RXF2SIDL, 0);
+   write_register_mcp2515(chip, RXF2EID8, 0);
+   write_register_mcp2515(chip, RXF2EID0, 0);
+   // filter 3
+   write_register_mcp2515(chip, RXF3SIDH, 0);
+   write_register_mcp2515(chip, RXF3SIDL, 0);
+   write_register_mcp2515(chip, RXF3EID8, 0);
+   write_register_mcp2515(chip, RXF3EID0, 0);
+   // filter 4
+   write_register_mcp2515(chip, RXF4SIDH, 0);
+   write_register_mcp2515(chip, RXF4SIDL, 0);
+   write_register_mcp2515(chip, RXF4EID8, 0);
+   write_register_mcp2515(chip, RXF4EID0, 0);
+   // filter 5
+   write_register_mcp2515(chip, RXF5SIDH, 0);
+   write_register_mcp2515(chip, RXF5SIDL, 0);
+   write_register_mcp2515(chip, RXF5EID8, 0);
+   write_register_mcp2515(chip, RXF5EID0, 0);
 }
 

@@ -14,7 +14,16 @@
 bool can_check_message_received(eChipSelect chip)
 {
    // check if interrupt pin is (logical not) set - interrupt available
-   return (!((CAN_CHIP1 == chip) ? IS_SET(CHIP1_INT_PIN) : IS_SET(CHIP2_INT_PIN)));
+   bool retVal = false;
+   if (CAN_CHIP1 == chip)
+   {
+      retVal = IS_SET(CHIP1_INT_PIN);
+   } /* end of if chip 1 */
+   else
+   {
+      retVal = IS_SET(CHIP2_INT_PIN);
+   } /* end of else chip 2 */
+   return(retVal);
 }
 
 /*
@@ -33,42 +42,55 @@ uint8_t can_get_message(eChipSelect chip,
 
    // determine address from where to read
    // see READ RX BUFFER instruction - datasheet page 65
-   if (BIT_IS_SET(status, RXB0)) {
+   if (BIT_IS_SET(status, RXB0))
+   {
       // message in buffer 0
       address = MCP2515_READ_RX;             // Receive Buffer 0, Start at RXB0SIDH
    }
-   else if (BIT_IS_SET(status, RXB1)) {
+   else if (BIT_IS_SET(status, RXB1))
+   {
       // message in buffer 1
       address = MCP2515_READ_RX | 0x04;      // Receive Buffer 1, Start at RXB1SIDH
    }
-   else {
-      // error: no message available
-      return 0;
+   else
+   {
+      // no message available
+      return(0);
    }
 
+   // reset /CS
    unset_chip_select(chip);
 
    // read bytes from address
    spi_putc(address);
 
    // read standard msg id
-   msg->msgId  = (uint16_t) spi_putc(0xFF) << 3;
-   msg->msgId |=            spi_putc(0xFF) >> 5;
-   // extended id - not used
-   spi_putc(0xFF);
-   spi_putc(0xFF);
-
-   // read DLC
-   uint8_t length = spi_putc(0xFF) & 0x0F;
-
-   msg->header.len = length;
-   msg->header.rtr = (BIT_IS_SET(status, RXB_RTR)) ? 1 : 0;
-
-   // read data bytes
-   for (uint8_t i = 0; i < length; ++i)
+   uint8_t byte1 = spi_putc(0xFF);
+   uint8_t byte2 = spi_putc(0xFF);
+   // TODO: implement extended id support
+   // check if extended id - not used yet
+   if (0 == BIT_IS_SET(byte2, IDE))
    {
-      msg->data[i] = spi_putc(0xFF);
-   }
+      msg->msgId  = (uint16_t) byte1 << 3;
+      msg->msgId |=            byte2 >> 5;
+      // extended id - not used
+      spi_putc(0xFF);
+      spi_putc(0xFF);
+
+      // read DLC
+      uint8_t length = spi_putc(0xFF) & 0x0F;
+
+      msg->header.len = length;
+      msg->header.rtr = (BIT_IS_SET(status, RXB_RTR)) ? 1 : 0;
+
+      // read data bytes
+      for (uint8_t i = 0; i < length; ++i)
+      {
+         msg->data[i] = spi_putc(0xFF);
+      }
+   } /* end of if standard id */
+
+   // set /CS
    set_chip_select(chip);
 
    // clear interrupt flag
@@ -81,10 +103,15 @@ uint8_t can_get_message(eChipSelect chip,
       bit_modify_mcp2515(chip, CANINTF, (1 << RX1IF), 0);
    }
 
-   // return filter match status
-   return (status & RXB_FILTERMATCHMASK) + 1;
+   if (0 == BIT_IS_SET(byte2, IDE))
+   {
+      // return filter match status
+      return(status & RXB_FILTERMATCHMASK) + 1;
+   } /* end of if standard id */
+   else
+   {
+      // not yet supported
+      return(0);
+   } /* end of extended id */
 }
-
-
-
 

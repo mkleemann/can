@@ -74,6 +74,37 @@
 #define RXM1EID8              0x26
 #define RXM1EID0              0x27
 
+// reception filter registers
+#define RXF0SIDH              0x00
+#define RXF0SIDL              0x01
+#define RXF0EID8              0x02
+#define RXF0EID0              0x03
+
+#define RXF1SIDH              0x04
+#define RXF1SIDL              0x05
+#define RXF1EID8              0x06
+#define RXF1EID0              0x07
+
+#define RXF2SIDH              0x08
+#define RXF2SIDL              0x09
+#define RXF2EID8              0x0A
+#define RXF2EID0              0x0B
+
+#define RXF3SIDH              0x10
+#define RXF3SIDL              0x11
+#define RXF3EID8              0x12
+#define RXF3EID0              0x13
+
+#define RXF4SIDH              0x14
+#define RXF4SIDL              0x15
+#define RXF4EID8              0x16
+#define RXF4EID0              0x17
+
+#define RXF5SIDH              0x18
+#define RXF5SIDL              0x19
+#define RXF5EID8              0x1A
+#define RXF5EID0              0x1B
+
 
 /**************************************************************************/
 /* MCP2515 BIT DEFINITIONS                                                */
@@ -227,13 +258,16 @@
 #define RXB_RXF0_RO_RXB1      0x06
 #define RXB_RXF1_RO_RXB1      0x07
 
+// RXBnSIDL (n = 0, 1)
+#define SRR                   4
+#define IDE                   3
 
 // TXBnDLC and RXBxDLC
-#define RTR       6
-#define DLC3      3
-#define DLC2      2
-#define DLC1      1
-#define DLC0      0
+#define RTR                   6
+#define DLC3                  3
+#define DLC2                  2
+#define DLC1                  1
+#define DLC0                  0
 
 /**************************************************************************/
 /* MCP2515 MODES OF OPERATION                                             */

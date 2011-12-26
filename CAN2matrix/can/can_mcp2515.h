@@ -221,4 +221,10 @@ void set_chip_select(eChipSelect chip);
  */
 void unset_chip_select(eChipSelect chip);
 
+/**
+ * @brief clear filters
+ * @param chip selected
+ */
+void clear_filters(eChipSelect chip);
+
 #endif /* CAN_MCP2515_H_ */

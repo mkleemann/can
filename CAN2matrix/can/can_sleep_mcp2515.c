@@ -19,4 +19,49 @@
 
 #include "can_mcp2515.h"
 
+/*
+ * @brief  put MCP2515 (and attached MCP2551) to sleep
+ *
+ * To put MCP2551 also to sleep connect RX1BF pin to RS pin of MCP2551. It
+ * is not always wanted to wakeup on any CAN activity. Sometimes, with
+ * multiple interfaces, the "master bus" should only trigger the wakeup,
+ * whereas the "slave" interfaces are woken up by wakeup signal from
+ * atmega.
+ *
+ * @param  chip select - chip to use
+ * @param  sleep mode  - when to activate MCP2515 again
+ */
+void mcp2515_sleep(eChipSelect   chip,
+                   uint8_t       mode)
+{
+   // put also the 2551 in standby mode
+   // for this, connect RX1BF to the RS pin of the MCP2551
+   bit_modify_mcp2515(chip, BFPCTRL, (1 << B1BFS), (1 << B1BFS));
+
+   // put the 2515 in sleep more
+   set_mode_mcp2515(chip, mode);
+
+   // enable generating an interrupt for wakeup when activity on bus
+   bit_modify_mcp2515(chip, CANINTE, (1 << WAKIE), (1 << WAKIE));
+}
+
+
+/*
+ * @brief  wakeup MCP2515 (and attached MCP2551) from sleep mode
+ *
+ * @param  chip select - chip to use
+ */
+void mcp2515_wakeup(eChipSelect   chip)
+{
+   // reset int enable and remove the interrupt flag
+   bit_modify_mcp2515(chip, CANINTE, (1 << WAKIE), 0);
+   bit_modify_mcp2515(chip, CANINTF, (1 << WAKIF), 0);
+
+   // wakeup the attached MCP2551
+   bit_modify_mcp2515(chip, BFPCTRL, (1 << B1BFS), 0);
+
+   // When we get out of sleep mode, we are in listen mode.
+   // Return now into normal mode again.
+   set_mode_mcp2515(chip, NORMAL_MODE);
+}
 

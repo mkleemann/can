@@ -38,7 +38,7 @@ Next Steps/Ideas:
 - (O) EEPROM use for message matrix
 - (O) make use of other AVRs to include CAN2analog or Analog2CAN possibility
 - (O) turn lights using fog lights with fade out
-- (O) implement support for extended CAN ids
+- (O) implement support for extended CAN frames
 
 Have fun!
 

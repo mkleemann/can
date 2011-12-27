@@ -7,6 +7,11 @@ signals arose when trying to build in my old CAN controlled radio.
 Single CAN solutions exist, but often they lack in something or other. So I
 used the tips and tricks to combine such solutions.
 
+*****************************************************************************
+* Note: The project is AVRStudio 5 based, so no makefile for WINAVR or any  *
+*       other toolchain available (yet).                                    *
+*****************************************************************************
+
 Both CAN buses (could) use a different bitrate. Only a small number of
 signals are needed to communicate between buses. Sleep and/or power down
 functionality is a must, if you don't want to help your car waking up after

@@ -24,6 +24,8 @@ Only a small testprogram is now available with a single MCP2515 attached to
 an ATmega8. It simply gets messages and sends them back with the message id
 increased by 10. Simple, but it works.
 
+Note: Only standard CAN frames are supported right now.
+
 Next Steps/Ideas:
 =================
 (M) mandatory
@@ -36,6 +38,7 @@ Next Steps/Ideas:
 - (O) EEPROM use for message matrix
 - (O) make use of other AVRs to include CAN2analog or Analog2CAN possibility
 - (O) turn lights using fog lights with fade out
+- (O) implement support for extended CAN ids
 
 Have fun!
 

@@ -1,4 +1,4 @@
-CAN2matrix - AVR based project to get infromation from one CAN bus to another.
+CAN2matrix - AVR based project to get information from one CAN bus to another.
 ==============================================================================
 
 Since new cars come with CAN bus to control anything, the need to use these
@@ -15,7 +15,7 @@ used the tips and tricks to combine such solutions.
 Both CAN buses (could) use a different bitrate. Only a small number of
 signals are needed to communicate between buses. Sleep and/or power down
 functionality is a must, if you don't want to help your car waking up after
-a weekend ;-). Of course, if you have acces sto information, make use of it.
+a weekend ;-). Of course, if you have access to information, make use of it.
 
 Current Stage:
 ==============

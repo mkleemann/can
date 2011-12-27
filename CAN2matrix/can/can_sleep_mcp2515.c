@@ -26,23 +26,26 @@
  * is not always wanted to wakeup on any CAN activity. Sometimes, with
  * multiple interfaces, the "master bus" should only trigger the wakeup,
  * whereas the "slave" interfaces are woken up by wakeup signal from
- * atmega.
+ * ATmega.
  *
  * @param  chip select - chip to use
  * @param  sleep mode  - when to activate MCP2515 again
  */
-void mcp2515_sleep(eChipSelect   chip,
-                   uint8_t       mode)
+void mcp2515_sleep(eChipSelect         chip,
+                   eInternalSleepMode  mode)
 {
    // put also the 2551 in standby mode
    // for this, connect RX1BF to the RS pin of the MCP2551
    bit_modify_mcp2515(chip, BFPCTRL, (1 << B1BFS), (1 << B1BFS));
 
-   // put the 2515 in sleep more
-   set_mode_mcp2515(chip, mode);
+   // put the 2515 in sleep mode
+   set_mode_mcp2515(chip, SLEEP_MODE);
 
-   // enable generating an interrupt for wakeup when activity on bus
-   bit_modify_mcp2515(chip, CANINTE, (1 << WAKIE), (1 << WAKIE));
+   if(INT_SLEEP_WAKEUP_BY_CAN == mode)
+   {
+      // enable generating an interrupt for wakeup when activity on bus
+      bit_modify_mcp2515(chip, CANINTE, (1 << WAKIE), (1 << WAKIE));
+   } /* end of how to wakeup */
 }
 
 

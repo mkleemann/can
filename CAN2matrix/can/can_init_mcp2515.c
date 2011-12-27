@@ -38,20 +38,20 @@
  * These values are based on 4Mhz oscillator frequency. Higher CAN bitrates
  * may need a higher clock frequency (bus idle time - see datasheet).
  *
- * Only one sample time is set, no wake-up filter.
+ * Only one sample time is set, wake-up filters too (Wake On CAN).
  */
 static uint8_t  mcp2515_cnf[NUM_OF_CAN_BITRATES][3] = {
    // CAN_BITRATE_100_KBPS
    {
       0x01,    // CNF1  (1 << BRP0)
       0xA0,    // CNF2  (1 << BTLMODE) | (1 << PHSEG12)
-      0x02     // CNF3  (1 << PHSEG21)
+      0x42     // CNF3  (1 << WAKFIL)  | (1 << PHSEG21)
    },
    // CAN_BITRATE_125_KBPS
    {
       0x01,    // CNF1  (1 << BRP0)
       0x90,    // CNF2  (1 << BTLMODE) | (1 << PHSEG11)
-      0x02     // CNF3  (1 << PHSEG21)
+      0x42     // CNF3  (1 << WAKFIL)  | (1 << PHSEG21)
    }
 };
 

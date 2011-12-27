@@ -46,6 +46,12 @@ typedef enum
    NUM_OF_CAN_BITRATES  = 2         // always the last one!
 } eCanBitRate;
 
+typedef enum
+{
+   INT_SLEEP_WAKEUP_BY_CAN = 0,
+   INT_SLEEP_MANUAL_WAKEUP = 1
+} eInternalSleepMode;
+
 
 /* @brief CAN message format - no extended frame support yet
  */
@@ -154,8 +160,8 @@ uint8_t read_status_mcp2515(eChipSelect  chip,
  * @param  chip select - chip to use
  * @param  sleep mode  - when to activate MCP2515 again
  */
-void mcp2515_sleep(eChipSelect   chip,
-                   uint8_t       mode);
+void mcp2515_sleep(eChipSelect         chip,
+                   eInternalSleepMode  mode);
 
 /*
  * @brief  wakeup MCP2515 (and attached MCP2551) from sleep mode

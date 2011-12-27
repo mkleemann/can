@@ -1,0 +1,37 @@
+CAN2matrix - AVR based project to get infromation from one CAN bus to another.
+==============================================================================
+
+Since new cars come with CAN bus to control anything, the need to use these
+signals arose when trying to build in my old CAN controlled radio.
+
+Single CAN solutions exist, but often they lack in something or other. So I
+used the tips and tricks to combine such solutions.
+
+Both CAN buses (could) use a different bitrate. Only a small number of
+signals are needed to communicate between buses. Sleep and/or power down
+functionality is a must, if you don't want to help your car waking up after
+a weekend ;-). Of course, if you have acces sto information, make use of it.
+
+Current Stage:
+==============
+
+Only a small testprogram is now available with a single MCP2515 attached to
+an ATmega8. It simply gets messages and sends them back with the message id
+increased by 10. Simple, but it works.
+
+Next Steps/Ideas:
+=================
+(M) mandatory
+(O) optional
+
+- (M) Power Down (all chips including AVR) by CAN bus sleep
+- (M) Wake Up by CAN activity on the (master) bus
+- (M) Implement "The CAN Matrix" in code
+- (O) Additional functionality, like PDC distance showed by LEDs
+- (O) EEPROM use for message matrix
+- (O) make use of other AVRs to include CAN2analog or Analog2CAN possibility
+- (O) turn lights using fog lights with fade out
+
+Have fun!
+
+M.

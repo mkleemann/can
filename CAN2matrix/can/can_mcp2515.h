@@ -179,6 +179,20 @@ void mcp2515_wakeup(eChipSelect   chip);
 void set_mode_mcp2515(eChipSelect   chip,
                       uint8_t       mode);
 
+/**
+ * @brief clear filters
+ * @param chip selected
+ */
+void clear_filters(eChipSelect chip);
+
+/**
+ * @brief set filters during configuration (static filters)
+ * @param chip selected
+ * @param pointer to filter struct
+ */
+void setFilters(eChipSelect   chip,
+                uint8_t*      filter);
+
 /************************************************************************/
 /* CAN FUNCTIONS                                                        */
 /************************************************************************/
@@ -239,10 +253,5 @@ void set_chip_select(eChipSelect chip);
  */
 void unset_chip_select(eChipSelect chip);
 
-/**
- * @brief clear filters
- * @param chip selected
- */
-void clear_filters(eChipSelect chip);
 
 #endif /* CAN_MCP2515_H_ */

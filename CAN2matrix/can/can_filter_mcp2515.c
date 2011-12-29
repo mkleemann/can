@@ -20,7 +20,10 @@
 #include "can_mcp2515.h"
 
 /**
- * @brief clear filters
+ * @brief clear all filters
+ *
+ * Note: The MCP2515 has to be in configuration mode to set these registers.
+ *
  * @param chip selected
  */
 void clear_filters(eChipSelect chip)
@@ -73,4 +76,14 @@ void clear_filters(eChipSelect chip)
    write_register_mcp2515(chip, RXF5EID0, 0);
 }
 
+/**
+ * @brief set filters during configuration (static filters)
+ * @param chip selected
+ * @param pointer to filter struct
+ */
+void setFilters(eChipSelect   chip,
+                uint8_t*      filter)
+{
+   // TODO: add filter setup implementation
+}
 

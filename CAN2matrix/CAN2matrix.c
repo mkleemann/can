@@ -26,15 +26,19 @@
 #include "util/util.h"
 #include "spi/spi.h"
 #include "can/can_mcp2515.h"
+#include "timer/timer.h"
 
 static volatile uint16_t send_it = 0;
 
 int main(void)
 {
-   // error LED output
+   // error LED output (low = on)
    DDRC |= (1 << PINC3) | (1 << PINC2) | (1 << PINC1) | (1 << PINC0);
    PORTC |= (1 << PINC3) | (1 << PINC2) | (1 << PINC1) | (1 << PINC0);
-   PORTC &= ~(1 << PINC0);
+
+   // set timer
+   initTimer0();
+   sei();
 
    // initialize the hardware SPI with default values set in spi/spi_config.h
    spi_pin_init();
@@ -42,22 +46,15 @@ int main(void)
    // init can interface 1
    if (false == can_init_mcp2515(CAN_CHIP1, CAN_BITRATE_125_KBPS))
    {
-      PORTC &= ~(1 << PINC2); // error
+      PORTC &= ~(1 << PINC0);    // error
    }
    else
    {
-      #if 0
-      // set timer
-      TIMSK |= (1 << TOIE0);                    // interrupt enable
-      TCCR0 |= (1 << CS02) | (1 << CS00);       // 1/1024 prescaler
-      sei();
-      #endif
-
       while (1)
       {
          can_t msg;
 
-         if(send_it == 0xFFFF)
+         if (send_it >= 4)    // approx. 260ms 4MHz@1024 prescale factor
          {
             send_it = 0;
             msg.msgId = 0x20B;
@@ -65,14 +62,16 @@ int main(void)
             msg.header.rtr = 0;
             msg.data[0] = 0xAF;
             msg.data[1] = 0xFE;
-
+            // send message every 260ms
             can_send_message(CAN_CHIP1, &msg);
+
+            PORTC ^= (1 << PINC2);     // toggle LED
          } /* end of if  */
 
-         if(can_check_message_received(CAN_CHIP1))
+         if (can_check_message_received(CAN_CHIP1))
          {
             // try to read message
-            if(can_get_message(CAN_CHIP1, &msg))
+            if (can_get_message(CAN_CHIP1, &msg))
             {
                PORTC ^= (1 << PINC3);
                msg.msgId += 10;
@@ -86,6 +85,5 @@ int main(void)
 ISR(TIMER0_OVF_vect)
 {
    ++send_it;
-   PORTC ^= (1 << PINC1);
 }
 

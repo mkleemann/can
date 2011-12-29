@@ -110,8 +110,9 @@ bool can_init_mcp2515(eChipSelect chip,
       clear_filters(chip);
 
       // setup PIN functions
-      // deactivate RXxBF pins and set to high impedance state
-      write_register_mcp2515(chip, BFPCTRL, 0);
+      // deactivate RX0BF pin and set to high impedance state;
+      // set RX1BF to digital output (0) for MCP2551 sleep mode control
+      write_register_mcp2515(chip, BFPCTRL, (1 << B1BFE));
       // setup TXnRTS pins as input
       write_register_mcp2515(chip, TXRTSCTRL, 0);
       // set MCP2515 into normal operations mode (no longer configurable)

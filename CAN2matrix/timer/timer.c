@@ -29,7 +29,23 @@
 void initTimer0()
 {
    TIMSK |= (1 << TOIE0);                    // interrupt enable - here overflow
+   TCCR0  = 0;                               // init and stop timer
+}
+
+/**
+ * @brief start Timer0
+ */
+void startTimer0()
+{
    TCCR0 |= TIMER0_PRESCALER;                // use defined prescaler value
+}
+
+/**
+ * @brief stop Timer0
+ */
+void stopTimer0()
+{
+   TCCR0 = 0;  // stops timer
 }
 
 /**

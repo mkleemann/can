@@ -39,18 +39,40 @@
 #endif
 
 /***************************************************************************/
-/* INIT FUNCTIONS                                                          */
+/* TIMER 0                                                                 */
 /***************************************************************************/
 
+// TODO: make timer functions inline, if possible/necessary
+
 /**
- * @brief initializes Timer0
+ * @brief initializes Timer0 and stops
  */
 void initTimer0();
+
+/**
+ * @brief start Timer0
+ */
+void startTimer0();
+
+/**
+ * @brief stop Timer0
+ */
+void stopTimer0();
+
+
+/***************************************************************************/
+/* TIMER 1                                                                 */
+/***************************************************************************/
 
 /**
  * @brief initializes Timer1
  */
 void initTimer1();
+
+
+/***************************************************************************/
+/* TIMER 2                                                                 */
+/***************************************************************************/
 
 /**
  * @brief initializes Timer2

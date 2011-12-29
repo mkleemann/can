@@ -10,9 +10,42 @@
  * ----------------------------------------------------------------------------
  **/
 
-/*
+/**
  * timer.c
+ *
+ * Note: It is assumed to use an ATmega8.
  *
  * Created: 28.11.2011 18:17:39
  *  Author: MKleemann
  */
+
+#include <avr/io.h>
+
+#include "timer.h"
+
+/**
+ * @brief initializes Timer0
+ */
+void initTimer0()
+{
+   TIMSK |= (1 << TOIE0);                    // interrupt enable - here overflow
+   TCCR0 |= TIMER0_PRESCALER;                // use defined prescaler value
+}
+
+/**
+ * @brief initializes Timer1
+ */
+void initTimer1()
+{
+}
+
+/**
+ * @brief initializes Timer2
+ */
+void initTimer2()
+{
+}
+
+
+
+

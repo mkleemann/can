@@ -10,8 +10,10 @@
  * ----------------------------------------------------------------------------
  **/
 
-/*
+/**
  * timer.h
+ *
+ * Note: It is assumed to use an ATmega8 here.
  *
  * Created: 28.11.2011 18:15:59
  *  Author: MKleemann
@@ -21,8 +23,38 @@
 #ifndef TIMER_H_
 #define TIMER_H_
 
+#include "timer_config.h"
 
+// check prescaler settings - if not set, the timer is assumed off
+#ifndef TIMER0_PRESCALER   // TIMER 0 off
+   #define TIMER0_PRESCALER   0
+#endif
 
+#ifndef TIMER1_PRESCALER   // TIMER 1 off
+   #define TIMER1_PRESCALER   0
+#endif
 
+#ifndef TIMER2_PRESCALER   // TIMER 2 off
+   #define TIMER2_PRESCALER   0
+#endif
+
+/***************************************************************************/
+/* INIT FUNCTIONS                                                          */
+/***************************************************************************/
+
+/**
+ * @brief initializes Timer0
+ */
+void initTimer0();
+
+/**
+ * @brief initializes Timer1
+ */
+void initTimer1();
+
+/**
+ * @brief initializes Timer2
+ */
+void initTimer2();
 
 #endif /* TIMER_H_ */

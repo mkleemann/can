@@ -28,7 +28,9 @@
 #include "can/can_mcp2515.h"
 #include "timer/timer.h"
 
-static volatile uint16_t send_it = 0;
+static volatile uint16_t send_it  = 0;
+static volatile uint16_t bussleep = 0;
+static volatile bool     wakeup   = false;
 
 int main(void)
 {
@@ -38,6 +40,8 @@ int main(void)
 
    // set timer
    initTimer0();
+   startTimer0();
+   // enable all (configured) interrupts
    sei();
 
    // initialize the hardware SPI with default values set in spi/spi_config.h
@@ -70,6 +74,8 @@ int main(void)
 
          if (can_check_message_received(CAN_CHIP1))
          {
+            // no bus sleep detected...
+            bussleep = 0;
             // try to read message
             if (can_get_message(CAN_CHIP1, &msg))
             {
@@ -78,12 +84,63 @@ int main(void)
                can_send_message(CAN_CHIP1, &msg);
             } /* end of if message read */
          } /* end of if check can message received */
-      }
+
+         /**** SLEEP *******************************************************/
+         if (bussleep >= 462)     // approx. 30s 4MHz@1024 prescale factor
+         {
+            // disable interrupts for now
+            cli();
+            // stop timer for now
+            stopTimer0();
+            // setup wakeup interrupt
+            MCUCR |= (1 << ISC00);  // any change triggers interrupt now
+            GICR  |= (1 << INT0);   // enable interrupt
+            // put MCP25* to sleep and wait for interrupt
+//            mcp2515_sleep(CAN_CHIP1, INT_SLEEP_WAKEUP_BY_CAN);
+            // reset values
+            send_it = 0;
+            bussleep = 0;
+            // enable interrupts again
+            sei();
+            // debugging ;-)
+            PORTC &= ~(1 << PINC1);     // LED on
+         } /* end of if no message received for 30 seconds */
+
+         /**** WAKEUP ******************************************************/
+         if (wakeup == true)
+         {
+            // disable all interrupts
+            cli();
+            // reset wakeup flag
+            wakeup = false;
+            // disable interrupt INT0
+            GICR &= ~(1 << INT0);
+            // wakeup MCP25*
+//            mcp2515_wakeup(CAN_CHIP1);
+            // start timer
+            startTimer0();
+            // enable all interrupts again
+            sei();
+            // debugging ;-)
+            PORTC |= (1 << PINC1);     // LED off
+         } /* end of if wakeup flag set */
+      } /* end of while(1) */
    } /* end of else do it */
-}
+} /* end of main() */
+
+
+/***************************************************************************/
+/* INTERRUPT SERVICE ROUTINES                                              */
+/***************************************************************************/
 
 ISR(TIMER0_OVF_vect)
 {
    ++send_it;
+   ++bussleep;
+}
+
+ISR(INT0_vect)
+{
+   wakeup = true;
 }
 

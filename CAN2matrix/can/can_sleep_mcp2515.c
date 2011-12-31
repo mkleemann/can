@@ -34,9 +34,12 @@
 void mcp2515_sleep(eChipSelect         chip,
                    eInternalSleepMode  mode)
 {
-   // put also the 2551 in standby mode
-   // for this, connect RX1BF to the RS pin of the MCP2551
-   bit_modify_mcp2515(chip, BFPCTRL, (1 << B1BFS), (1 << B1BFS));
+   // put also the 2551 in standby mode, but only when waking it up manually
+   if(INT_SLEEP_MANUAL_WAKEUP == mode)
+   {
+      // for this, connect RX1BF to the RS pin of the MCP2551
+      bit_modify_mcp2515(chip, BFPCTRL, (1 << B1BFS), (1 << B1BFS));
+   }
 
    // put the 2515 in sleep mode
    set_mode_mcp2515(chip, SLEEP_MODE);
@@ -60,7 +63,7 @@ void mcp2515_wakeup(eChipSelect   chip)
    bit_modify_mcp2515(chip, CANINTE, (1 << WAKIE), 0);
    bit_modify_mcp2515(chip, CANINTF, (1 << WAKIF), 0);
 
-   // wakeup the attached MCP2551
+   // wakeup the attached MCP2551, if connected
    bit_modify_mcp2515(chip, BFPCTRL, (1 << B1BFS), 0);
 
    // When we get out of sleep mode, we are in listen mode.

@@ -24,7 +24,7 @@
 #define TIMER_CONFIG_H_
 
 //**************************************************************************
-// TIMER0/1 prescaler settings
+// TIMER0 prescaler settings
 //
 // CS02 CS01 CS00 Description
 //    0    0    0 No clock source (Timer/Counter stopped)
@@ -38,10 +38,26 @@
 //**************************************************************************
 
 // TIMER0 with prescaler clkI/O/1024
-#define TIMER0_PRESCALER      (1 << CS02) | (1 << CS00)
+//#define TIMER0_PRESCALER      (1 << CS02) | (1 << CS00)
 
+//**************************************************************************
+// TIMER1 prescaler settings
+//
+// CS12 CS11 CS10 Description
+//    0    0    0 No clock source (Timer/Counter stopped)
+//    0    0    1 clkI/O/(No prescaling)
+//    0    1    0 clkI/O/8 (From prescaler)
+//    0    1    1 clkI/O/64 (From prescaler)
+//    1    0    0 clkI/O/256 (From prescaler)
+//    1    0    1 clkI/O/1024 (From prescaler)
+//    1    1    0 External clock source on T1 pin. Clock on falling edge
+//    1    1    1 External clock source on T1 pin. Clock on rising edge
+//**************************************************************************
 // TIMER1 with prescaler clkI/O/1024
-//#define TIMER1_PRESCALER      (1 << CS02) | (1 << CS00)
+#define TIMER1_PRESCALER      (1 << CS12) | (1 << CS10)
+
+// ~15s (4MHz@1024 prescale value)
+#define TIMER1_COMPARE_VALUE  0xE4E1
 
 //**************************************************************************
 // TIMER2 prescaler settings
@@ -58,6 +74,10 @@
 //**************************************************************************
 
 // TIMER2 with prescaler clkT2S/1024
-//#define TIMER2_PRESCALER      (1 << CS22) | (1 << CS21) | (1 << CS20)
+#define TIMER2_PRESCALER      (1 << CS22) | (1 << CS21) | (1 << CS20)
+
+// TIMER2 output compare value - default is max. 0xFF (255)
+// --> value 98 is 25.088ms (4MHz@1024 prescale factor)
+#define TIMER2_COMPARE_VALUE  98
 
 #endif /* TIMER_CONFIG_H_ */

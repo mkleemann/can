@@ -21,7 +21,33 @@
 #ifndef CAN2MATRIX_H_
 #define CAN2MATRIX_H_
 
+/***************************************************************************/
+/* DEFINITIONS                                                             */
+/***************************************************************************/
 
+/***************************************************************************/
+/* INT0 trigger definition                                                 */
+/*                                                                         */
+/* ISC11 ISC10 Description                                                 */
+/*     0     0 The low level of INT0 generates an interrupt request        */
+/*     0     1 Any logical change on INT0 generates an interrupt request   */
+/*     1     0 The falling edge of INT0 generates an interrupt request     */
+/*     1     1 The rising edge of INT0 generates an interrupt request      */
+/***************************************************************************/
+#define EXTERNAL_INT0_TRIGGER    (1 << ISC01)
+#define EXTERNAL_INT0_ENABLE     (1 << INT0)
+
+/***************************************************************************/
+/* INT1 trigger definition                                                 */
+/*                                                                         */
+/* ISC11 ISC10 Description                                                 */
+/*     0     0 The low level of INT1 generates an interrupt request        */
+/*     0     1 Any logical change on INT1 generates an interrupt request   */
+/*     1     0 The falling edge of INT1 generates an interrupt request     */
+/*     1     1 The rising edge of INT1 generates an interrupt request      */
+/***************************************************************************/
+//#define EXTERNAL_INT1_TRIGGER    (1 << ISC01)
+//#define EXTERNAL_INT1_ENABLE     (1 << INT1)
 
 
 

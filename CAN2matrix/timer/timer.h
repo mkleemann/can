@@ -116,6 +116,11 @@ void startTimer1();
  */
 void stopTimer1();
 
+/**
+ * @brief restart Timer1 (set counter register to 0)
+ */
+void restartTimer1();
+
 
 /***************************************************************************/
 /* TIMER 2                                                                 */

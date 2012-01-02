@@ -119,6 +119,14 @@ void stopTimer1()
    TCCR1B &= ~(TIMER1_PRESCALER);               // stop timer
 }
 
+/**
+ * @brief restart Timer1 (set counter register to 0)
+ */
+void restartTimer1()
+{
+   TCNT1 = 0;                                   // reset counter register
+}
+
 
 /***************************************************************************/
 /* TIMER 2                                                                 */
@@ -183,10 +191,11 @@ void stopTimer2()
 }
 
 /**
- * @brief restart Timer2, e.g. in compare mode
+ * @brief restart Timer2 (set counter register to 0)
  */
 void restartTimer2()
 {
+   TCNT2 = 0;                                   // reset counter register
 }
 
 

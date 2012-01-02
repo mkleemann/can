@@ -72,7 +72,7 @@ void initTimer1(eTimerMode mode)
          TIMSK |= (1 << TOIE1);                 // set overflow interrupt enable
          break;
       } /* end of case TimerOverflow */
-      case TimerCompare:                        // CTC
+      case TimerCompare:                        // Fast PWM with 16-bit compare
       {
          // use Fast PWM and ICR for compare mode (14) to get long periods
          TIMSK       |= (1 << TICIE1);                   // set output compare interrupt enable

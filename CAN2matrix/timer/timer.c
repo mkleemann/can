@@ -75,7 +75,7 @@ void initTimer1(eTimerMode mode)
       case TimerCompare:                        // Fast PWM with 16-bit compare
       {
          // use Fast PWM and ICR for compare mode (14) to get long periods
-         TIMSK       |= (1 << TICIE1);                   // set output compare interrupt enable
+         TIMSK       |= (1 << TICIE1);                   // set input capture interrupt enable
          ctrlRegValA |= (1 << WGM11);                    // set Fast PWM mode with ICR1 as compare register
          ctrlRegValB |= (1 << WGM13) | (1 << WGM12);     // set Fast PWM mode with ICR1 as compare register
          ICR1H        = (TIMER1_COMPARE_VALUE >> 8);     // set compare value for interrupt

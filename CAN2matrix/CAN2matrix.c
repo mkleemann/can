@@ -128,6 +128,7 @@ int main(void)
                PORTC ^= (1 << PINC3);
 
                // reset timer, since there is activity on master CAN bus
+               restartTimer1();
 
                if(msg.msgId = 0x600)
                {

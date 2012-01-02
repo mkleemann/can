@@ -24,6 +24,10 @@ Only a small testprogram is now available with a single MCP2515 attached to
 an ATmega8. It simply gets messages and sends them back with the message id
 increased by 10. Simple, but it works.
 
+Additionally a simple bus sleep detection is on its way, to put the CAN chips
+to sleep and detecting bus activity to wake the up. Timers are tested, but
+the first try to detect bus sleep had some timing issues.
+
 Note: Only standard CAN frames are supported right now.
 
 Next Steps/Ideas:

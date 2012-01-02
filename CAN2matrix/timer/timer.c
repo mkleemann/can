@@ -69,17 +69,17 @@ void initTimer1(eTimerMode mode)
    {
       case TimerOverflow:                       // overflow interrupt
       {
-         TIMSK |= TOIE1;                        // set overflow interrupt enable
+         TIMSK |= (1 << TOIE1);                 // set overflow interrupt enable
          break;
       } /* end of case TimerOverflow */
       case TimerCompare:                        // CTC
       {
          // use Fast PWM and ICR for compare mode (14) to get long periods
-         TIMSK       |= TICIE1;                                // set output compare interrupt enable
-         ctrlRegValA |= (1 << WGM11);                          // set Fast PWM mode with ICR1 as compare register
-         ctrlRegValB |= (1 << WGM13) | (1 << WGM12);           // set Fast PWM mode with ICR1 as compare register
-         ICR1H        = (uint8_t) TIMER1_COMPARE_VALUE >> 8;   // set compare value for interrupt
-         ICR1L        = (uint8_t) TIMER1_COMPARE_VALUE & 0xFF; // set compare value for interrupt
+         TIMSK       |= (1 << TICIE1);                   // set output compare interrupt enable
+         ctrlRegValA |= (1 << WGM11);                    // set Fast PWM mode with ICR1 as compare register
+         ctrlRegValB |= (1 << WGM13) | (1 << WGM12);     // set Fast PWM mode with ICR1 as compare register
+         ICR1H        = (TIMER1_COMPARE_VALUE >> 8);     // set compare value for interrupt
+         ICR1L        = (TIMER1_COMPARE_VALUE & 0xFF);   // set compare value for interrupt
          break;
       } /* end of case TimerCompare */          // phase correct PWM
       case TimerPwm:
@@ -136,12 +136,12 @@ void initTimer2(eTimerMode mode)
    {
       case TimerOverflow:                       // overflow interrupt
       {
-         TIMSK |= TOIE2;                        // set overflow interrupt enable
+         TIMSK |= (1 << TOIE2);                 // set overflow interrupt enable
          break;
       } /* end of case TimerOverflow */
       case TimerCompare:                        // CTC
       {
-         TIMSK       |= OCIE2;                  // set output compare interrupt enable
+         TIMSK       |= (1 << OCIE2);           // set output compare interrupt enable
          ctrlRegVal  |= (1 << WGM21);           // set CTC mode
          OCR2         = TIMER2_COMPARE_VALUE;   // set compare value for interrupt
          break;

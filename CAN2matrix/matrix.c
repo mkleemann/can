@@ -99,6 +99,51 @@ void fillInfoToCAN1(can_t* msg)
  */
 void fillInfoToCAN2(can_t* msg)
 {
+   // remove any old values
+   for(int i = 0; i < 8; ++i)
+   {
+      msg->data[i] = 0;
+   } /* end of for 0..7 */
+
+   switch(msg->msgId)
+   {
+      case CANID_2_IGNITION:
+      {
+         // fill in length of message
+         msg->header.len = 2;
+         // main ignition status
+         msg->data[0] = storage.ignition;
+         // 0: start not active; 1: normal start
+         msg->data[1] = (storage.ignition & 0x80) ? 1 : 0;
+         break;
+      } /* end of case CANID_2_IGNITION */
+      case CANID_2_WHEEL_DATA:
+      {
+         // message is 8 bytes long
+         msg->header.len = 8;
+         // byte 0/1: engine PRM    : not used here
+         // byte 2/3: vehicle speed : not used here
+         // byte 4/5: wheel count left; byte 6/7: wheel count right
+         msg->data[4] = storage.wheel1U;
+         msg->data[5] = storage.wheel1L;
+         msg->data[6] = storage.wheel2U;
+         msg->data[7] = storage.wheel2L;
+         break;
+      } /* end of case CANID_2_WHEEL_DATA */
+      case CANID_2_REVERSE_GEAR:
+      {
+         // message is 7 bytes long
+         msg->header.len = 7;
+         // gear box status
+         msg->data[2] = storage.gearBox;
+         break;
+      } /* end of case CANID_2_REVERSE_GEAR */
+      default:
+      {
+         // do nothing!
+         break;
+      } /* end of default */
+   } /* end of switch msgId */
 }
 
 
@@ -155,13 +200,13 @@ void transferIgnStatus(can_t* msg)
 void transferWheelCount(can_t* msg)
 {
    // only 10 bits per wheel for count value
-   storage.wheel1U = msg->data[0];
+   storage.wheel1U = msg->data[0];         // FL
    storage.wheel1L = msg->data[1] & 0x3;
-   storage.wheel2U = msg->data[2];
+   storage.wheel2U = msg->data[2];         // FR
    storage.wheel2L = msg->data[3] & 0x3;
-   storage.wheel3U = msg->data[4];
+   storage.wheel3U = msg->data[4];         // RL
    storage.wheel3L = msg->data[5] & 0x3;
-   storage.wheel4U = msg->data[6];
+   storage.wheel4U = msg->data[6];         // RR
    storage.wheel4L = msg->data[7] & 0x3;
 }
 
@@ -190,6 +235,7 @@ void transferGearStatus(can_t* msg)
    {
       status |= 0x04;
    } /* end of else if D/S/tip (not P) */
+   // else status = 0
 
    // store information
    storage.gearBox = status;

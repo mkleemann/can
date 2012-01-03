@@ -116,10 +116,10 @@
 #define CANID_2_IGNITION               0x20B
 
 // wheel pulse counter
-#define CANID_2_WHEEL_DATA             0x20E
+#define CANID_2_WHEEL_DATA             0x211
 
 // gear box status, e.g. for rear view camera and navigation
-#define CANID_2_REVERSE_GEAR           0x21E
+#define CANID_2_REVERSE_GEAR           0x20E
 
 // light status and dimming for keys
 #define CANID_2_LIGHT_STATUS           0x309

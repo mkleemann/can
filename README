@@ -24,21 +24,24 @@ Only a small testprogram is now available with a single MCP2515 attached to
 an ATmega8. It simply gets messages and sends them back with the message id
 increased by 10. Simple, but it works.
 
-Additionally a simple bus sleep detection is on its way, to put the CAN chips
-to sleep and detecting bus activity to wake them up. Timers are tested, but
-not used (tested) yet. The first try with one timer and counting values to
-detect bus sleep had some timing issues, which I hope to got rid of now.
+Some special CAN ids are now treated and can be tested with a CAN adapter or
+the real target radio.
+
+Additionally a simple bus sleep detection is working to put the connected CAN
+chip (MCP2515) to sleep, w/o the MCP2551 to be able to detect CAN activity.
 
 Note: Only standard CAN frames are supported right now.
 
 Next Steps/Ideas:
 =================
-(M) mandatory
-(O) optional
+(M)andatory
+(O)ptional
+(D)one
+(P)artly
 
-- (M) Power Down (all chips including AVR) by CAN bus sleep
-- (M) Wake Up by CAN activity on the (master) bus
-- (M) Implement "The CAN Matrix" in code
+- (P) Power Down (all chips including AVR) by CAN bus sleep
+- (D) Wake Up by CAN activity on the (master) bus
+- (P) Implement "The CAN Matrix" in code
 - (O) Additional functionality, like PDC distance showed by LEDs
 - (O) EEPROM use for message matrix
 - (O) make use of other AVRs to include CAN2analog or Analog2CAN possibility

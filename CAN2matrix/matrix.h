@@ -159,4 +159,35 @@ void fillInfoToCAN1(can_t* msg);
 void fillInfoToCAN2(can_t* msg);
 
 
+/***************************************************************************/
+/* Helpers to match bytes and bits                                         */
+/***************************************************************************/
+
+/**
+ * @brief match different IGN status messages
+ *
+ * Direction from CAN1 to CAN2!
+ *
+ * @param pointer to CAN message
+ */
+void transferIgnStatus(can_t* msg);
+
+/**
+ * @brief transfer wheel count values to storage
+ *
+ * Direction from CAN1 to CAN2
+ *
+ * @param pointer to CAN message
+ */
+void transferWheelCount(can_t* msg);
+
+/**
+ * @brief transfer gear box status (reverse gear)
+ *
+ * Direction from CAN1 to CAN2
+ *
+ * @param pointer to CAN message
+ */
+void transferGearStatus(can_t* msg);
+
 #endif /* MATRIX_H_ */

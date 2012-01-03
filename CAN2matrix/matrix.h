@@ -21,8 +21,7 @@
 #ifndef MATRIX_H_
 #define MATRIX_H_
 
-#include <avr/io.h>
-#include "can/can.h"
+#include "can/can_mcp2515.h"
 
 
 /***************************************************************************/

@@ -28,6 +28,7 @@
 #include "can/can_mcp2515.h"
 #include "timer/timer.h"
 #include "CAN2matrix.h"
+#include "matrix.h"
 
 static volatile uint8_t  send_it  = 0;
 static volatile bool     bussleep = false;
@@ -75,7 +76,7 @@ int main(void)
             // setup wakeup interrupt
             GICR  |= EXTERNAL_INT0_ENABLE;   // enable interrupt INT0
             // put MCP2515 to sleep and wait for interrupt
-//            mcp2515_sleep(CAN_CHIP1, INT_SLEEP_WAKEUP_BY_CAN);
+            mcp2515_sleep(CAN_CHIP1, INT_SLEEP_WAKEUP_BY_CAN);
             // debugging ;-)
             PORTC &= ~(1 << PINC1);     // LED on
             // enable interrupts again
@@ -93,7 +94,7 @@ int main(void)
             MCUCR &= ~(EXTERNAL_INT0_TRIGGER);     // remove trigger flags
             GICR  &= ~(EXTERNAL_INT0_ENABLE);      // disable interrupt INT0
             // wakeup MCP25*
-//            mcp2515_wakeup(CAN_CHIP1);
+            mcp2515_wakeup(CAN_CHIP1);
             // start timer
             startTimer2();
             // debugging ;-)
@@ -106,15 +107,12 @@ int main(void)
          /**** TESTING *****************************************************/
          can_t msg;
 
-         if (send_it >= 4)    // approx. 255ms 4MHz@1024 prescale factor
+         if (send_it >= 4)    // approx. 100ms 4MHz@1024 prescale factor
          {
             send_it = 0;
-            msg.msgId = 0x20B;
-            msg.header.len = 2;
-            msg.header.rtr = 0;
-            msg.data[0] = 0xAF;
-            msg.data[1] = 0xFE;
-            // send message every 260ms
+            msg.msgId = CANID_2_IGNITION;
+            fillInfoToCAN2(&msg);
+            // send message every 100ms
             can_send_message(CAN_CHIP1, &msg);
 
             PORTC ^= (1 << PINC2);     // toggle LED
@@ -130,10 +128,8 @@ int main(void)
                // reset timer, since there is activity on master CAN bus
                restartTimer1();
 
-               if(msg.msgId = 0x600)
-               {
-                  bussleep = true;
-               } /* end of if  */
+//               fetchInfoFromCAN1(&msg);
+//               fillInfoToCAN2(&msg);
 
                msg.msgId += 10;
                can_send_message(CAN_CHIP1, &msg);

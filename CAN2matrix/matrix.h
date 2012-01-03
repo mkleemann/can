@@ -131,6 +131,36 @@
 #define CANID_2_LANGUAGE_AND_UNIT      0x2B0
 
 /***************************************************************************/
+/* Bit Definitions                                                         */
+/***************************************************************************/
+
+// Ignition CAN1
+#define IGN_1_CL_S                     0
+#define IGN_1_CL_15                    1
+#define IGN_1_CL_X                     2
+#define IGN_1_CL_50                    3
+#define IGN_1_CL_P                     4
+#define IGN_1_CL_15SV                  6
+#define IGN_1_CL_L                     7
+
+// combinations for CAN1
+#define IGN_1_KEY_Status       (1 << IGN_1_CL_S)
+#define IGN_1_ACC_Status      ((1 << IGN_1_CL_L) | (1 << IGN_1_CL_15SV))
+#define IGN_1_START_Status    ((1 << IGN_1_CL_50) | (1 << IGN_1_CL_X))
+#define IGN_1_ON               (1 << IGN_1_CL_15)
+
+// Ignition CAN2
+#define IGN_2_KeyIn                    0
+#define IGN_2_Stat1                    5
+#define IGN_2_Stat2                    6
+#define IGN_2_Stat3                    7
+
+// combinations for CAN2
+#define IGN_2_ACC_On_IGN_Off  ((1 << IGN_2_Stat2) | (1 << IGN_2_Stat1))
+#define IGN_2_IGN_Start       ((1 << IGN_2_Stat3) | (1 << IGN_2_Stat2))
+#define IGN_2_ON               (1 << IGN_2_Stat3)
+
+/***************************************************************************/
 /* functions for matrix operations                                         */
 /***************************************************************************/
 

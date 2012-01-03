@@ -123,7 +123,8 @@ void fillInfoToCAN2(can_t* msg)
          msg->header.len = 8;
          // byte 0/1: engine PRM    : not used here
          // byte 2/3: vehicle speed : not used here
-         // byte 4/5: wheel count left; byte 6/7: wheel count right
+         // byte 4/5: wheel count left
+         // byte 6/7: wheel count right
          msg->data[4] = storage.wheel1U;
          msg->data[5] = storage.wheel1L;
          msg->data[6] = storage.wheel2U;
@@ -166,24 +167,24 @@ void transferIgnStatus(can_t* msg)
    // check key in event
    // Note: Byte2 (start status) is set to SNA (7) or normal start (1) when
    //       sending destination message.
-   status |= byte1 & 0x01;    // bit 0 - Key In Ignition
+   status |= (byte1 & IGN_1_KEY_Status);  // bit 0 - Key In Ignition (IGN_2_KeyIn)
 
    // check ACC status
-   if(byte1 & 0b11000010)
+   if(byte1 & IGN_1_ACC_Status)
    {
-      status |= 0b01100000;   // bits 5-7 - IGN off and ACC on
+      status |= IGN_2_ACC_On_IGN_Off;     // bits 5-7 - IGN off and ACC on
    } /* end of if ACC */
 
    // check IGN start status
-   if(byte1 & 0b00001000)
+   if(byte1 & IGN_1_START_Status)
    {
-      status |= 0b10100000;   // bits 5-7 - IGN start
+      status |= IGN_2_IGN_Start;          // bits 5-7 - IGN start
    } /* end of if IGN start */
 
    // check IGN on status
-   if(byte1 & 0b00000100)
+   if(byte1 & IGN_1_ON)
    {
-      status |= 0b10000000;   // bit 5-7 - IGN on
+      status |= IGN_2_ON;                 // bit 5-7 - IGN on
    } /* end of if IGN on */
 
    // store information
@@ -200,14 +201,14 @@ void transferIgnStatus(can_t* msg)
 void transferWheelCount(can_t* msg)
 {
    // only 10 bits per wheel for count value
-   storage.wheel1U = msg->data[0];         // FL
-   storage.wheel1L = msg->data[1] & 0x3;
-   storage.wheel2U = msg->data[2];         // FR
-   storage.wheel2L = msg->data[3] & 0x3;
-   storage.wheel3U = msg->data[4];         // RL
-   storage.wheel3L = msg->data[5] & 0x3;
-   storage.wheel4U = msg->data[6];         // RR
-   storage.wheel4L = msg->data[7] & 0x3;
+   storage.wheel1U = msg->data[0] & 0x3;  // FL
+   storage.wheel1L = msg->data[1];
+   storage.wheel2U = msg->data[2] & 0x3;  // FR
+   storage.wheel2L = msg->data[3];
+   storage.wheel3U = msg->data[4] & 0x3;  // RL
+   storage.wheel3L = msg->data[5];
+   storage.wheel4U = msg->data[6] & 0x3;  // RR
+   storage.wheel4L = msg->data[7];
 }
 
 /**

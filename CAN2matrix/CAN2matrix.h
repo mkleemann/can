@@ -29,7 +29,7 @@
 /***************************************************************************/
 /* INT0 trigger definition                                                 */
 /*                                                                         */
-/* ISC11 ISC10 Description                                                 */
+/* ISC01 ISC00 Description                                                 */
 /*     0     0 The low level of INT0 generates an interrupt request        */
 /*     0     1 Any logical change on INT0 generates an interrupt request   */
 /*     1     0 The falling edge of INT0 generates an interrupt request     */
@@ -49,6 +49,18 @@
 /***************************************************************************/
 //#define EXTERNAL_INT1_TRIGGER    (1 << ISC01)
 //#define EXTERNAL_INT1_ENABLE     (1 << INT1)
+
+/***************************************************************************/
+/* AVR sleep modes: power down                                             */
+/*                                                                         */
+/* SM2 SM1 SM0 Sleep Mode                                                  */
+/*   0   0   0 Idle                                                        */
+/*   0   0   1 ADC Noise Reduction                                         */
+/*   0   1   0 Power-down                                                  */
+/*   0   1   1 Power-save                                                  */
+/*   1   1   0 Standby                                                     */
+/***************************************************************************/
+#define AVR_SLEEP_MODE           (1 << SM1)
 
 
 /***************************************************************************/

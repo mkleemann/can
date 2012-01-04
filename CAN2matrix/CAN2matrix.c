@@ -85,13 +85,13 @@ int main(void)
             mcp2515_sleep(CAN_CHIP1, INT_SLEEP_WAKEUP_BY_CAN);
             // put MCP25* to sleep for CAN2 and activate after activity on CAN1
             mcp2515_sleep(CAN_CHIP2, INT_SLEEP_MANUAL_WAKEUP);
-            // TODO: Let AVR sleep too!
-
-
             // debugging ;-)
-            led_on(sleepLed);
+            led_off(sleepLed);
             // enable interrupts again
             sei();
+            // let's sleep...
+            MCUCR |= (1 << SE);        // set sleep enable before setting up mode
+            MCUCR |= AVR_SLEEP_MODE;   // selected sleep mode: power down
          } /* end of if no message received for 30 seconds */
 
          /**** WAKEUP ******************************************************/
@@ -110,7 +110,7 @@ int main(void)
             // start timer
             startTimer2();
             // debugging ;-)
-            led_off(sleepLed);
+            led_on(sleepLed);
             // enable all interrupts again
             sei();
          } /* end of if wakeup flag set */
@@ -163,6 +163,16 @@ int main(void)
 
       } /* end of while(1) */
    } /* end of else do it */
+
+   // error handling, if CAN initialization failed
+   stopTimer2();
+   while(1)
+   {
+      if(0 == (send_it % 20))    // approx. 500ms 4MHz@1024 prescale factor
+      {
+         led_toggle(sleepLed);
+      } /* end of if 500ms tick */
+   } /* end of while(1) - error handling */
 } /* end of main() */
 
 
@@ -206,7 +216,8 @@ ISR(TIMER2_COMP_vect)
 // External Interrupt0 handler to wake up from CAN activity
 ISR(INT0_vect)
 {
-   // TODO: Waking up the AVR too!
+   // Waking up the AVR too!
+   MCUCR &= ~((1 << SE) | AVR_SLEEP_MODE);
    wakeup = true;
 }
 

@@ -31,9 +31,11 @@
 #include "CAN2matrix.h"
 #include "matrix.h"
 
-static volatile uint8_t  send_it       = 0;
-static volatile bool     bussleep      = false;
-static volatile bool     wakeup        = false;
+static volatile uint8_t send_it     = 0;
+static volatile bool    send100ms    = false;
+static volatile bool    send500ms    = false;
+static volatile bool    bussleep     = false;
+static volatile bool    wakeup       = false;
 
 int main(void)
 {
@@ -134,16 +136,18 @@ int main(void)
 
          /**** PUT MESSAGES ON CAN2 ****************************************/
 
-         if (0 == (send_it % 4))    // approx. 100ms 4MHz@1024 prescale factor
+         if (send100ms)    // approx. 100ms 4MHz@1024 prescale factor
          {
+            send100ms = false;
             msg.msgId = CANID_2_IGNITION;
             sendCan2Message(&msg);
             msg.msgId = CANID_2_WHEEL_DATA;  // should be 50ms, but keep it
             sendCan2Message(&msg);
          } /* end of if 100ms tick */
 
-         if(0 == (send_it % 20))    // approx. 500ms 4MHz@1024 prescale factor
+         if(send500ms)    // approx. 500ms 4MHz@1024 prescale factor
          {
+            send500ms = false;
             msg.msgId = CANID_2_REVERSE_GEAR;
             sendCan2Message(&msg);
          } /* end of if 500ms tick */
@@ -168,7 +172,7 @@ int main(void)
    stopTimer2();
    while(1)
    {
-      if(0 == (send_it % 20))    // approx. 500ms 4MHz@1024 prescale factor
+      if(send500ms)    // approx. 500ms 4MHz@1024 prescale factor
       {
          led_toggle(sleepLed);
       } /* end of if 500ms tick */
@@ -211,6 +215,8 @@ ISR(TIMER1_CAPT_vect)
 ISR(TIMER2_COMP_vect)
 {
    ++send_it;
+   send100ms = (0 == (send_it % 4));   // ~100ms
+   send500ms = (0 == (send_it % 20));  // ~500ms
 }
 
 // External Interrupt0 handler to wake up from CAN activity

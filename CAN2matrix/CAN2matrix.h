@@ -25,6 +25,7 @@
 /* DEFINITIONS                                                             */
 /***************************************************************************/
 
+
 /***************************************************************************/
 /* INT0 trigger definition                                                 */
 /*                                                                         */
@@ -49,6 +50,19 @@
 //#define EXTERNAL_INT1_TRIGGER    (1 << ISC01)
 //#define EXTERNAL_INT1_ENABLE     (1 << INT1)
 
+
+/***************************************************************************/
+/* HELPER ROUTINES                                                         */
+/***************************************************************************/
+
+/**
+ * @brief sends message to CAN2 and filling up converted data
+ *
+ * Note: Set message id before calling this function.
+ *
+ * @param pointer to CAN message
+ */
+void sendCan2Message(can_t* msg);
 
 
 #endif /* CAN2MATRIX_H_ */

@@ -27,18 +27,18 @@
 #include "spi/spi.h"
 #include "can/can_mcp2515.h"
 #include "timer/timer.h"
+#include "leds/leds.h"
 #include "CAN2matrix.h"
 #include "matrix.h"
 
-static volatile uint8_t  send_it  = 0;
-static volatile bool     bussleep = false;
-static volatile bool     wakeup   = false;
+static volatile uint8_t  send_it       = 0;
+static volatile bool     bussleep      = false;
+static volatile bool     wakeup        = false;
 
 int main(void)
 {
-   // error LED output (low = on)
-   DDRC |= (1 << PINC3) | (1 << PINC2) | (1 << PINC1) | (1 << PINC0);
-   PORTC |= (1 << PINC3) | (1 << PINC2) | (1 << PINC1) | (1 << PINC0);
+   // init LED output
+   led_init();
 
    // set timer for bussleep detection
    initTimer1(TimerCompare);
@@ -53,10 +53,16 @@ int main(void)
    spi_pin_init();
    spi_master_init();
    // init can interface 1
-   if (false == can_init_mcp2515(CAN_CHIP1, CAN_BITRATE_125_KBPS))
+   if (false == can_init_mcp2515(CAN_CHIP1, CAN_BITRATE_100_KBPS))
    {
-      PORTC &= ~(1 << PINC0);    // error
-   }
+      // signal error on initialization
+      led_on(errCan1LED);
+   } /* end of init CAN1 failed */
+   else if(false == can_init_mcp2515(CAN_CHIP2, CAN_BITRATE_125_KBPS))
+   {
+      // signal error on initialization
+      led_on(errCan2LED);
+   } /* end of else init failed CAN2 */
    else
    {
       while (1)
@@ -75,10 +81,15 @@ int main(void)
             MCUCR |= EXTERNAL_INT0_TRIGGER;  // set trigger flags
             // setup wakeup interrupt
             GICR  |= EXTERNAL_INT0_ENABLE;   // enable interrupt INT0
-            // put MCP2515 to sleep and wait for interrupt
+            // put MCP2515 to sleep and wait for activity interrupt
             mcp2515_sleep(CAN_CHIP1, INT_SLEEP_WAKEUP_BY_CAN);
+            // put MCP25* to sleep for CAN2 and activate after activity on CAN1
+            mcp2515_sleep(CAN_CHIP2, INT_SLEEP_MANUAL_WAKEUP);
+            // TODO: Let AVR sleep too!
+
+
             // debugging ;-)
-            PORTC &= ~(1 << PINC1);     // LED on
+            led_on(sleepLed);
             // enable interrupts again
             sei();
          } /* end of if no message received for 30 seconds */
@@ -93,48 +104,62 @@ int main(void)
             // disable interrupt INT0
             MCUCR &= ~(EXTERNAL_INT0_TRIGGER);     // remove trigger flags
             GICR  &= ~(EXTERNAL_INT0_ENABLE);      // disable interrupt INT0
-            // wakeup MCP25*
+            // wakeup all CAN busses
             mcp2515_wakeup(CAN_CHIP1);
+            mcp2515_wakeup(CAN_CHIP2);
             // start timer
             startTimer2();
             // debugging ;-)
-            PORTC |= (1 << PINC1);     // LED off
+            led_off(sleepLed);
             // enable all interrupts again
             sei();
          } /* end of if wakeup flag set */
 
-
-         /**** TESTING *****************************************************/
+         /**** GET MESSAGES FROM CAN1 **************************************/
          can_t msg;
 
-         if (send_it >= 4)    // approx. 100ms 4MHz@1024 prescale factor
-         {
-            send_it = 0;
-            msg.msgId = CANID_2_IGNITION;
-            fillInfoToCAN2(&msg);
-            // send message every 100ms
-            can_send_message(CAN_CHIP1, &msg);
-
-            PORTC ^= (1 << PINC2);     // toggle LED
-         } /* end of if  */
-
-         if (can_check_message_received(CAN_CHIP1))
+         if(can_check_message_received(CAN_CHIP1))
          {
             // try to read message
             if (can_get_message(CAN_CHIP1, &msg))
             {
-               PORTC ^= (1 << PINC3);
-
                // reset timer, since there is activity on master CAN bus
                restartTimer1();
+               // fetch information from CAN1
+               fetchInfoFromCAN1(&msg);
+               // signal activity
+               led_toggle(rxCan1LED);
+            } /* end of if message is read */
+         } /* end of if check message received on CAN1 */
 
-//               fetchInfoFromCAN1(&msg);
-//               fillInfoToCAN2(&msg);
+         /**** PUT MESSAGES ON CAN2 ****************************************/
 
-               msg.msgId += 10;
-               can_send_message(CAN_CHIP1, &msg);
-            } /* end of if message read */
-         } /* end of if check can message received */
+         if (0 == (send_it % 4))    // approx. 100ms 4MHz@1024 prescale factor
+         {
+            msg.msgId = CANID_2_IGNITION;
+            sendCan2Message(&msg);
+            msg.msgId = CANID_2_WHEEL_DATA;  // should be 50ms, but keep it
+            sendCan2Message(&msg);
+         } /* end of if 100ms tick */
+
+         if(0 == (send_it % 20))    // approx. 500ms 4MHz@1024 prescale factor
+         {
+            msg.msgId = CANID_2_REVERSE_GEAR;
+            sendCan2Message(&msg);
+         } /* end of if 500ms tick */
+
+         /**** GET MESSAGES FROM CAN2 **************************************/
+
+         // empty read buffers and get information
+         if(can_check_message_received(CAN_CHIP2))
+         {
+            // try to read message
+            if (can_get_message(CAN_CHIP2, &msg))
+            {
+               // fetch information from CAN2
+               fetchInfoFromCAN2(&msg);
+            } /* end of if message is read */
+         } /* end of if check message received on CAN2 */
 
       } /* end of while(1) */
    } /* end of else do it */
@@ -142,15 +167,28 @@ int main(void)
 
 
 /***************************************************************************/
-/* INTERRUPT SERVICE ROUTINES                                              */
+/* HELPER ROUTINES                                                         */
 /***************************************************************************/
 
-#if 0
-// Timer0 overflow interrupt handler (~65ms 4MHz@1024 precale factor)
-ISR(TIMER0_OVF_vect)
+/**
+ * @brief sends message to CAN2 and filling up converted data
+ *
+ * Note: Set message id before calling this function.
+ *
+ * @param pointer to CAN message
+ */
+void sendCan2Message(can_t* msg)
 {
+   fillInfoToCAN2(&msg);
+   // send message
+   can_send_message(CAN_CHIP2, &msg);
+   // signal activity
+   led_toggle(txCan2LED);
 }
-#endif
+
+/***************************************************************************/
+/* INTERRUPT SERVICE ROUTINES                                              */
+/***************************************************************************/
 
 // Timer1 input capture interrupt (~15s 4MHz@1024 prescale factor)
 ISR(TIMER1_CAPT_vect)
@@ -165,9 +203,10 @@ ISR(TIMER2_COMP_vect)
    ++send_it;
 }
 
-// External Interrupt0 handler
+// External Interrupt0 handler to wake up from CAN activity
 ISR(INT0_vect)
 {
+   // TODO: Waking up the AVR too!
    wakeup = true;
 }
 

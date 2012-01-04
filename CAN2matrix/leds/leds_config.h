@@ -26,9 +26,12 @@
  */
 typedef enum
 {
-   rxLED = 0,
-   txLED = 1,
-   NUM_OF_LEDS = 2         // always the last one
+   errCan1LED  = 0,
+   errCan2LED  = 1,
+   txCan2LED   = 2,
+   rxCan1LED   = 3,
+   sleepLed    = 4,
+   NUM_OF_LEDS = 5         // always the last one
 } eLED;
 
 /* @brief type of led control struct
@@ -40,8 +43,11 @@ typedef struct { pvuint8_t ddr;
 
 /* @brief define global array to access port pins directly via port address
  */
-static ledType ledPins[NUM_OF_LEDS] = { {&DDR(C), &PORT(C), 0},    // 0
-                                        {&DDR(C), &PORT(C), 1}     // NUM_OF_LEDS - 1
+static ledType ledPins[NUM_OF_LEDS] = { {&DDR(C), &PORT(C), PINC0},    // 0
+                                        {&DDR(C), &PORT(C), PINC1},    // 1
+                                        {&DDR(C), &PORT(C), PINC2},    // 2
+                                        {&DDR(C), &PORT(C), PINC3},    // 3
+                                        {&DDR(C), &PORT(C), PINC4}     // NUM_OF_LEDS - 1
                                       };
 
 #endif /* LEDS_CONFIG_H_ */

@@ -41,13 +41,14 @@ typedef struct { pvuint8_t ddr;
                  uint8_t   pin;
                } ledType;
 
-/* @brief define global array to access port pins directly via port address
+/**
+ * @brief defines for global array to access port pins directly via port address
  */
-static ledType ledPins[NUM_OF_LEDS] = { {&DDR(C), &PORT(C), PINC0},    // 0
-                                        {&DDR(C), &PORT(C), PINC1},    // 1
-                                        {&DDR(C), &PORT(C), PINC2},    // 2
-                                        {&DDR(C), &PORT(C), PINC3},    // 3
-                                        {&DDR(C), &PORT(C), PINC4}     // NUM_OF_LEDS - 1
-                                      };
+#define P_LED0       {&DDR(C), &PORT(C), PINC0},    // 0
+#define P_LED1       {&DDR(C), &PORT(C), PINC1},    // 1
+#define P_LED2       {&DDR(C), &PORT(C), PINC2},    // 2
+#define P_LED3       {&DDR(C), &PORT(C), PINC3},    // 3
+#define P_LED4       {&DDR(C), &PORT(C), PINC4}     // NUM_OF_LEDS - 1
+
 
 #endif /* LEDS_CONFIG_H_ */

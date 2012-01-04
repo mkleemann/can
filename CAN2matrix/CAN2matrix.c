@@ -179,9 +179,9 @@ int main(void)
  */
 void sendCan2Message(can_t* msg)
 {
-   fillInfoToCAN2(&msg);
+   fillInfoToCAN2(msg);
    // send message
-   can_send_message(CAN_CHIP2, &msg);
+   can_send_message(CAN_CHIP2, msg);
    // signal activity
    led_toggle(txCan2LED);
 }

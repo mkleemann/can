@@ -83,17 +83,17 @@ typedef enum
  * There is no argument yet, since mode of Timer0 is overflow only at
  * ATmega8. This has to be adapted, if using another AVR.
  */
-void initTimer0();
+void initTimer0(void);
 
 /**
  * @brief start Timer0
  */
-void startTimer0();
+void startTimer0(void);
 
 /**
  * @brief stop Timer0
  */
-void stopTimer0();
+void stopTimer0(void);
 
 
 /***************************************************************************/
@@ -109,17 +109,17 @@ void initTimer1(eTimerMode mode);
 /**
  * @brief start Timer1
  */
-void startTimer1();
+void startTimer1(void);
 
 /**
  * @brief stop Timer1
  */
-void stopTimer1();
+void stopTimer1(void);
 
 /**
  * @brief restart Timer1 (set counter register to 0)
  */
-void restartTimer1();
+void restartTimer1(void);
 
 
 /***************************************************************************/
@@ -135,16 +135,16 @@ void initTimer2(eTimerMode mode);
 /**
  * @brief start Timer2
  */
-void startTimer2();
+void startTimer2(void);
 
 /**
  * @brief stop Timer2
  */
-void stopTimer2();
+void stopTimer2(void);
 
 /**
  * @brief restart Timer2, e.g. in compare mode
  */
-void restartTimer2();
+void restartTimer2(void);
 
 #endif /* TIMER_H_ */

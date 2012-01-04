@@ -28,7 +28,7 @@
  * @param  nothing
  * @return nothing
  */
-void led_init();
+void led_init(void);
 
 /* @brief  switches a led defined by a number on
  * @param  led to be switched, defined by enum in leds_config.h

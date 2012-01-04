@@ -26,7 +26,7 @@
 /* @brief initializes uart interface
  *
  */
-void uart_init();
+void uart_init(void);
 
 /* @brief  put byte to uart interface
  * @param  byte to be transmitted to UART
@@ -44,7 +44,7 @@ void uart_puts(const char *data);
  * @param  nothing
  * @return received byte
  */
-uint8_t uart_getc_wait (void);
+uint8_t uart_getc_wait(void);
 
 
 /* @brief  read byte from UART, but don't wait for it

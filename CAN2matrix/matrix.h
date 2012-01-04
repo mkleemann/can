@@ -130,6 +130,16 @@
 // switches units and language
 #define CANID_2_LANGUAGE_AND_UNIT      0x2B0
 
+// config status 2 - rear view camera present
+#define CANID_2_CONFIG_STATUS2         0x21E
+
+// navigation turn-by-turn information
+#define CANID_2_NAVI_TURN_BY_TURN      0x2D4
+
+// radio station name
+#define CANID_2_RADIO_STATION_NAME     0x295
+
+
 /***************************************************************************/
 /* Bit Definitions                                                         */
 /***************************************************************************/

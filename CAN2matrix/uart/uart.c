@@ -54,11 +54,11 @@ void uart_init()
  */
 void uart_putc(const uint8_t data)
 {
-   // Warten, bis UDR bereit ist für einen neuen Wert
+   // wait until UDR is ready for a new value
    while (!(UCSRA & (1 << UDRE)))
       ;
 
-   // UDR Schreiben startet die Übertragung
+   // writing UDR starts transmission
    UDR = data;
 }
 

@@ -60,8 +60,8 @@ typedef struct
    uint16_t    msgId;               // message id (11 bits)
    struct
    {
-      uint8_t rtr : 1;              // remote transmit request frame
-      uint8_t len : 4;              // data length
+      unsigned int rtr : 1;         // remote transmit request frame
+      unsigned int len : 4;         // data length
    } header;
    uint8_t  data[8];                // data bytes
 } can_t;
@@ -75,7 +75,7 @@ typedef struct
    uint16_t mask;                   // mask
    struct
    {
-      uint8_t rtr : 2;              // remote transmit request frame
+      unsigned int rtr : 2;         // remote transmit request frame
    } flags;
 } can_filter_t;
 

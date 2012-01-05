@@ -47,6 +47,10 @@
    #define TIMER2_COMPARE_VALUE  0xFF
 #endif
 
+// clear all prescaler bits to stop timers - just in case
+#define TIMER0_STOP              (1 << CS02) | (1 << CS01) | (1 << CS00)
+#define TIMER1_STOP              (1 << CS12) | (1 << CS11) | (1 << CS10)
+#define TIMER2_STOP              (1 << CS22) | (1 << CS21) | (1 << CS20)
 
 /***************************************************************************/
 /* TYPEDEFINITION                                                          */

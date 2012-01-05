@@ -49,7 +49,7 @@ void startTimer0()
  */
 void stopTimer0()
 {
-   TCCR0 &= ~(TIMER0_PRESCALER);                // stops timer
+   TCCR0 &= ~(TIMER0_STOP);
 }
 
 /***************************************************************************/
@@ -116,7 +116,7 @@ void startTimer1()
  */
 void stopTimer1()
 {
-   TCCR1B &= ~(TIMER1_PRESCALER);               // stop timer
+   TCCR1B &= ~(TIMER1_STOP);
 }
 
 /**
@@ -187,7 +187,7 @@ void startTimer2()
  */
 void stopTimer2()
 {
-   TCCR2 &= ~(TIMER2_PRESCALER);                // stop timer
+   TCCR2 &= ~(TIMER2_STOP);
 }
 
 /**

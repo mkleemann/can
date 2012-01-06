@@ -31,10 +31,10 @@
  *
  * TODO: rework
  */
-static ledType ledPins[NUM_OF_LEDS] = { P_LED0
-                                        P_LED1
-                                        P_LED2
-                                        P_LED3
+static ledType ledPins[NUM_OF_LEDS] = { P_LED0,
+                                        P_LED1,
+                                        P_LED2,
+                                        P_LED3,
                                         P_LED4
                                       };
 

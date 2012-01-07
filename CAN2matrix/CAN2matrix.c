@@ -22,6 +22,7 @@
 #include <util/delay.h>
 #include <stdbool.h>
 #include <avr/interrupt.h>
+#include <avr/sleep.h>
 
 #include "util/util.h"
 #include "spi/spi.h"
@@ -41,6 +42,8 @@ int main(void)
 {
    // init LED output
    led_init();
+   // show startup
+   led_on(sleepLed);
 
    // set timer for bussleep detection
    initTimer1(TimerCompare);
@@ -91,9 +94,11 @@ int main(void)
             led_off(sleepLed);
             // enable interrupts again
             sei();
+#if ___AVR_SLEEP_ON___
             // let's sleep...
-            MCUCR |= (1 << SE);        // set sleep enable before setting up mode
-            MCUCR |= AVR_SLEEP_MODE;   // selected sleep mode: power down
+            set_sleep_mode(SLEEP_MODE_PWR_DOWN);
+            sleep_mode();
+#endif
          } /* end of if no message received for 30 seconds */
 
          /**** WAKEUP ******************************************************/
@@ -103,9 +108,6 @@ int main(void)
             cli();
             // reset flags
             wakeup = false;
-            // disable interrupt INT0
-            MCUCR &= ~(EXTERNAL_INT0_TRIGGER);     // remove trigger flags
-            GICR  &= ~(EXTERNAL_INT0_ENABLE);      // disable interrupt INT0
             // wakeup all CAN busses
             mcp2515_wakeup(CAN_CHIP1);
             mcp2515_wakeup(CAN_CHIP2);
@@ -117,53 +119,56 @@ int main(void)
             sei();
          } /* end of if wakeup flag set */
 
-         /**** GET MESSAGES FROM CAN1 **************************************/
-         can_t msg;
-
-         if(can_check_message_received(CAN_CHIP1))
+         if((false == wakeup) && (false == bussleep))
          {
-            // try to read message
-            if (can_get_message(CAN_CHIP1, &msg))
+            /**** GET MESSAGES FROM CAN1 ***********************************/
+            can_t msg;
+
+            if(can_check_message_received(CAN_CHIP1))
             {
-               // reset timer, since there is activity on master CAN bus
-               restartTimer1();
-               // fetch information from CAN1
-               fetchInfoFromCAN1(&msg);
-               // signal activity
-               led_toggle(rxCan1LED);
-            } /* end of if message is read */
-         } /* end of if check message received on CAN1 */
+               // try to read message
+               if (can_get_message(CAN_CHIP1, &msg))
+               {
+                  // reset timer, since there is activity on master CAN bus
+                  restartTimer1();
+                  // fetch information from CAN1
+                  fetchInfoFromCAN1(&msg);
+                  // signal activity
+                  led_toggle(rxCan1LED);
+               } /* end of if message is read */
+            } /* end of if check message received on CAN1 */
 
-         /**** PUT MESSAGES ON CAN2 ****************************************/
+            /**** PUT MESSAGES ON CAN2 *************************************/
 
-         if (send100ms)    // approx. 100ms 4MHz@1024 prescale factor
-         {
-            send100ms = false;
-            msg.msgId = CANID_2_IGNITION;
-            sendCan2Message(&msg);
-            msg.msgId = CANID_2_WHEEL_DATA;  // should be 50ms, but keep it
-            sendCan2Message(&msg);
-         } /* end of if 100ms tick */
-
-         if(send500ms)    // approx. 500ms 4MHz@1024 prescale factor
-         {
-            send500ms = false;
-            msg.msgId = CANID_2_REVERSE_GEAR;
-            sendCan2Message(&msg);
-         } /* end of if 500ms tick */
-
-         /**** GET MESSAGES FROM CAN2 **************************************/
-
-         // empty read buffers and get information
-         if(can_check_message_received(CAN_CHIP2))
-         {
-            // try to read message
-            if (can_get_message(CAN_CHIP2, &msg))
+            if (send100ms)    // approx. 100ms 4MHz@1024 prescale factor
             {
-               // fetch information from CAN2
-               fetchInfoFromCAN2(&msg);
-            } /* end of if message is read */
-         } /* end of if check message received on CAN2 */
+               send100ms = false;
+               msg.msgId = CANID_2_IGNITION;
+               sendCan2Message(&msg);
+               msg.msgId = CANID_2_WHEEL_DATA;  // should be 50ms, but keep it
+               sendCan2Message(&msg);
+            } /* end of if 100ms tick */
+
+            if(send500ms)    // approx. 500ms 4MHz@1024 prescale factor
+            {
+               send500ms = false;
+               msg.msgId = CANID_2_REVERSE_GEAR;
+               sendCan2Message(&msg);
+            } /* end of if 500ms tick */
+
+            /**** GET MESSAGES FROM CAN2 ***********************************/
+
+            // empty read buffers and get information
+            if(can_check_message_received(CAN_CHIP2))
+            {
+               // try to read message
+               if (can_get_message(CAN_CHIP2, &msg))
+               {
+                  // fetch information from CAN2
+                  fetchInfoFromCAN2(&msg);
+               } /* end of if message is read */
+            } /* end of if check message received on CAN2 */
+         } /* end of if no bussleep and no wakeup running */
 
       } /* end of while(1) */
    } /* end of else do it */
@@ -222,8 +227,12 @@ ISR(TIMER2_COMP_vect)
 // External Interrupt0 handler to wake up from CAN activity
 ISR(INT0_vect)
 {
-   // Waking up the AVR too!
-   MCUCR &= ~((1 << SE) | AVR_SLEEP_MODE);
+#if ___AVR_SLEEP_ON___
+   // disable interrupt: caution if signal lies too long on pin
+   GICR  &= ~(EXTERNAL_INT0_ENABLE);
+   // remove interrupt possible trigger INT0 to use pin for CAN signalling
+   MCUCR &= ~((1 << ISC01) | (1 << ISC00));
+#endif
    wakeup = true;
 }
 

@@ -48,5 +48,9 @@ void led_off(eLED led);
  */
 void led_toggle(eLED led);
 
+/**
+ * @brief switches all LEDs off, e.g. fo power down modes
+ */
+void led_all_off(void);
 
 #endif /* LEDS_H_ */

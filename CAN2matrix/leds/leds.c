@@ -84,3 +84,14 @@ void led_toggle(eLED led)
    *(ledPins[led].port) ^= (1<<ledPins[led].pin);
 }
 
+/**
+ * @brief switches all LEDs off, e.g. fo power down modes
+ */
+void led_all_off(void)
+{
+   for(int i = 0; i < NUM_OF_LEDS; ++i)
+   {
+      led_off(i);
+   } /* end of for 0..NUM_OF_LEDS-1 */
+}
+

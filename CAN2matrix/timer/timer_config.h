@@ -77,8 +77,8 @@
 #define TIMER2_PRESCALER      (1 << CS22) | (1 << CS21) | (1 << CS20)
 
 // TIMER2 output compare value - default is max. 0xFF (255)
-// --> value 98 is 25.088ms (4MHz@1024 prescale factor)
-#define TIMER2_COMPARE_VALUE  98
+// --> value 99 is ~25ms (4MHz@1024 prescale factor)
+#define TIMER2_COMPARE_VALUE  99
 
 #endif /* TIMER_CONFIG_H_ */
 

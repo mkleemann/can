@@ -84,16 +84,16 @@ int main(void)
             send_it  = 0;
             // setup wakeup interrupt INT0 trigger
             MCUCR |= EXTERNAL_INT0_TRIGGER;  // set trigger flags
-            // setup wakeup interrupt
-            GICR  |= EXTERNAL_INT0_ENABLE;   // enable interrupt INT0
             // put MCP2515 to sleep and wait for activity interrupt
             mcp2515_sleep(CAN_CHIP1, INT_SLEEP_WAKEUP_BY_CAN);
             // put MCP25* to sleep for CAN2 and activate after activity on CAN1
             mcp2515_sleep(CAN_CHIP2, INT_SLEEP_MANUAL_WAKEUP);
-            // debugging ;-)
-            led_off(sleepLed);
-            // enable interrupts again
+            // low power consumption
+            led_all_off();
+            // enable all interrupts again
             sei();
+            // enable wakeup interrupt
+            GICR  |= EXTERNAL_INT0_ENABLE;   // enable interrupt INT0
 #if ___AVR_SLEEP_ON___
             // let's sleep...
             set_sleep_mode(SLEEP_MODE_PWR_DOWN);

@@ -35,7 +35,7 @@
 /*     1     0 The falling edge of INT0 generates an interrupt request     */
 /*     1     1 The rising edge of INT0 generates an interrupt request      */
 /***************************************************************************/
-#define EXTERNAL_INT0_TRIGGER    (1 << ISC00)
+#define EXTERNAL_INT0_TRIGGER    (1 << ISC01)
 #define EXTERNAL_INT0_ENABLE     (1 << INT0)
 
 /***************************************************************************/
@@ -47,7 +47,7 @@
 /*     1     0 The falling edge of INT1 generates an interrupt request     */
 /*     1     1 The rising edge of INT1 generates an interrupt request      */
 /***************************************************************************/
-//#define EXTERNAL_INT1_TRIGGER    (1 << ISC01)
+//#define EXTERNAL_INT1_TRIGGER    (1 << ISC11)
 //#define EXTERNAL_INT1_ENABLE     (1 << INT1)
 
 /***************************************************************************/

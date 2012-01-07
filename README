@@ -40,8 +40,8 @@ Next Steps/Ideas:
 (P)artly
 (T)esting
 
-- (T) Power Down (all chips including AVR) by CAN bus sleep
-- (D) Wake Up by CAN activity on the (master) bus (MCP25*)
+- (D) Power Down (all chips including AVR) by CAN bus sleep
+- (T) Wake Up by CAN activity on the (master) bus (MCP25*) - new hardware
 - (T) Wake Up by CAN activity for AVR itself
 - (P) Implement "The CAN Matrix" in code
 - (O) Additional functionality, like PDC distance showed by LEDs

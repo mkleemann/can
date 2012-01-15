@@ -104,6 +104,13 @@ bool can_init_mcp2515(eChipSelect chip,
 
       // initialize RX interrupts
       write_register_mcp2515(chip, CANINTE, (1<<RX1IE) | (1<<RX0IE));
+#ifdef ___MASTER_CAN_CLKOUT_ENABLE___
+      // init CLKOUT on master CAN
+      if(CAN_CHIP1 == chip)
+      {  // prescaler is CLKPREx = 00 -> fosc/1
+         bit_modify_mcp2515(chip, CANCTRL(0), (1 << CLKEN), (1 << CLKEN));
+      } /* end of if CLKEN on master CAN */
+#endif
 
       // clear filters
       // TODO: set filters correctly - now all messages are received

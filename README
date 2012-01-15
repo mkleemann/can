@@ -30,6 +30,9 @@ activity. CAN2 (slave) will be powered down completely with MCP2551. AVR goes
 down on power down mode with INT0 enabled to wake it up (wake on CAN
 activity).
 
+Note: Somehow the wakeup does no longer work on my test board, whereas it
+      worked on the breadboard. Looking after the error now...
+
 Note: Only standard CAN frames are supported right now.
 
 Next Steps/Ideas:

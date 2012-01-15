@@ -17,12 +17,11 @@
  *  Author: MKleemann
  */
 
-#include <avr/io.h>
-
-#include <util/delay.h>
 #include <stdbool.h>
+#include <avr/io.h>
 #include <avr/interrupt.h>
 #include <avr/sleep.h>
+#include <util/delay.h>
 
 #include "util/util.h"
 #include "spi/spi.h"
@@ -32,7 +31,9 @@
 #include "CAN2matrix.h"
 #include "matrix.h"
 
-static volatile uint8_t send_it     = 0;
+#define ___AVR_SLEEP_ON___
+
+static volatile uint8_t send_it      = 0;
 static volatile bool    send100ms    = false;
 static volatile bool    send500ms    = false;
 static volatile bool    bussleep     = false;
@@ -51,6 +52,8 @@ int main(void)
    // set timer for CAN 100ms trigger
    initTimer2(TimerCompare);
    startTimer2();
+   // configure wakeup interrupt INT0 for later use
+   MCUCR |= EXTERNAL_INT0_TRIGGER;  // set trigger flags
    // enable all (configured) interrupts
    sei();
 
@@ -76,25 +79,26 @@ int main(void)
          if (bussleep == true)
          {
             // disable interrupts for now
-            cli();
+//            cli();
             // stop timer for now
             stopTimer2();
             // reset global flags
             bussleep = false;
             send_it  = 0;
-            // setup wakeup interrupt INT0 trigger
-            MCUCR |= EXTERNAL_INT0_TRIGGER;  // set trigger flags
+            // put MCP25* to sleep for CAN2 and activate after activity on CAN1
+            // This has to be done before master CAN goes to sleep, because
+            // the clock of the slave chip may be taken from master CAN chip's
+            // CLKOUT pin.
+            mcp2515_sleep(CAN_CHIP2, INT_SLEEP_MANUAL_WAKEUP);
             // put MCP2515 to sleep and wait for activity interrupt
             mcp2515_sleep(CAN_CHIP1, INT_SLEEP_WAKEUP_BY_CAN);
-            // put MCP25* to sleep for CAN2 and activate after activity on CAN1
-            mcp2515_sleep(CAN_CHIP2, INT_SLEEP_MANUAL_WAKEUP);
             // low power consumption
             led_all_off();
-            // enable all interrupts again
-            sei();
             // enable wakeup interrupt
             GICR  |= EXTERNAL_INT0_ENABLE;   // enable interrupt INT0
-#if ___AVR_SLEEP_ON___
+            // enable all interrupts again
+//            sei();
+#ifdef ___AVR_SLEEP_ON___
             // let's sleep...
             set_sleep_mode(SLEEP_MODE_PWR_DOWN);
             sleep_mode();
@@ -105,18 +109,21 @@ int main(void)
          if (wakeup == true)
          {
             // disable all interrupts
-            cli();
+//            cli();
+            // disable interrupt: precaution, if signal lies too long on pin
+            GICR  &= ~(EXTERNAL_INT0_ENABLE);
             // reset flags
             wakeup = false;
             // wakeup all CAN busses
             mcp2515_wakeup(CAN_CHIP1);
+            _delay_ms(10);       // wait for clock of CAN1 to be ready
             mcp2515_wakeup(CAN_CHIP2);
             // start timer
             startTimer2();
             // debugging ;-)
             led_on(sleepLed);
             // enable all interrupts again
-            sei();
+//            sei();
          } /* end of if wakeup flag set */
 
          if((false == wakeup) && (false == bussleep))
@@ -227,12 +234,6 @@ ISR(TIMER2_COMP_vect)
 // External Interrupt0 handler to wake up from CAN activity
 ISR(INT0_vect)
 {
-#if ___AVR_SLEEP_ON___
-   // disable interrupt: caution if signal lies too long on pin
-   GICR  &= ~(EXTERNAL_INT0_ENABLE);
-   // remove interrupt possible trigger INT0 to use pin for CAN signalling
-   MCUCR &= ~((1 << ISC01) | (1 << ISC00));
-#endif
    wakeup = true;
 }
 

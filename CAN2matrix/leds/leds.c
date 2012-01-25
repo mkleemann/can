@@ -95,3 +95,15 @@ void led_all_off(void)
    } /* end of for 0..NUM_OF_LEDS-1 */
 }
 
+/**
+ * @brief switches all LEDs on, e.g. for signalling
+ */
+void led_all_on(void)
+{
+   for(int i = 0; i < NUM_OF_LEDS; ++i)
+   {
+      led_on(i);
+   } /* end of for 0..NUM_OF_LEDS-1 */
+}
+
+

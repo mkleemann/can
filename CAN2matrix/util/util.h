@@ -37,6 +37,7 @@
 //       the preprocessor runs into trouble with the number of arguments.
 #define PIN_SET_INPUT(x)         _PIN_SET_INPUT(x)
 #define PIN_SET_OUTPUT(x)        _PIN_SET_OUTPUT(x)
+#define PIN_SET_PULLUP(x)        _PIN_SET_INPUT(x); _SET_PIN(x)
 
 #define SET_PIN(x)               _SET_PIN(x)
 #define RESET_PIN(x)             _RESET_PIN(x)

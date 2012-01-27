@@ -57,7 +57,7 @@ int main(void)
    startTimer2();
    led_off(errCan2LED); // step 2
    // configure wakeup interrupt INT0 for later use
-   MCUCR |= EXTERNAL_INT0_TRIGGER;  // set trigger flags
+   MCUCR |= EXTERNAL_INT0_TRIGGER;
    // enable all (configured) interrupts
    sei();
    led_off(txCan2LED);  // step 3
@@ -115,6 +115,7 @@ int main(void)
             // let's sleep...
             set_sleep_mode(AVR_SLEEP_MODE);
             sleep_mode();
+            _NOP(); _NOP(); _NOP();    // just in case...
 #endif
          } /* end of if no message received for 15 seconds */
 
@@ -258,7 +259,7 @@ ISR(INT0_vect)
 {
    // disable interrupt: precaution, if signal lies too long on pin
    GICR  &= ~(EXTERNAL_INT0_ENABLE);
-   led_toggle(errCan1LED);
+   led_toggle(errCan2LED);
    fsmState = WAKEUP;
 }
 

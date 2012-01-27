@@ -50,7 +50,7 @@ typedef enum
 /*     1     0 The falling edge of INT0 generates an interrupt request     */
 /*     1     1 The rising edge of INT0 generates an interrupt request      */
 /***************************************************************************/
-#define EXTERNAL_INT0_TRIGGER    (1 << ISC00)
+#define EXTERNAL_INT0_TRIGGER    (1 << ISC01)
 #define EXTERNAL_INT0_ENABLE     (1 << INT0)
 
 /***************************************************************************/

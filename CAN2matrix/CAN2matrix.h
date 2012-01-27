@@ -94,4 +94,37 @@ typedef enum
 void sendCan2Message(can_t* msg);
 #endif
 
+/**
+ * @brief Go to sleep mode. Deactivate CAN and set the sleep mode.
+ */
+void sleepDetected(void);
+
+/**
+ * @brief Wake up CAN and reinitialize the timer
+ */
+void wakeUp(void);
+
+/**
+ * @brief Do all the work.
+ */
+void run(void);
+
+/**
+ * @brief Error state. Call this when an illegal state is reached.
+ */
+void errorState(void);
+
+/**
+ * @brief Initialize LED, Timer and SPI.
+ */
+void initHardware(void);
+
+/**
+ * @brief Initialize the CAN controllers
+ *
+ * @return true if all is ok. Otherwise false is returned.
+ */
+bool initCAN(void);
+
+
 #endif /* CAN2MATRIX_H_ */

@@ -77,7 +77,7 @@ int main(void)
             break;
          }
       } /* end of while(1) */
-   } /* end of else do it */
+   } /* end of CAN inits successfully */
 
 #ifndef ___SIMULATION___
    errorState();
@@ -109,7 +109,7 @@ void sendCan2Message(can_t* msg)
 #endif
 
 /**
- * @brief got to sleep mode. Deactivate CAN and set the sleep mode.
+ * @brief Go to sleep mode. Deactivate CAN and set the sleep mode.
  */
 void sleepDetected()
 {
@@ -163,7 +163,6 @@ void wakeUp()
    restartTimer1();
    restartTimer2();
 
-   // start timer
    startTimer2();
    startTimer1();
 
@@ -307,7 +306,7 @@ bool initCAN()
    {
       // signal error on initialization
       led_on(errCan2LED);
-      retVal = false
+      retVal = false;
    } /* end of else init failed CAN2 */
 #endif
 

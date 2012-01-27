@@ -22,9 +22,24 @@
 #define CAN2MATRIX_H_
 
 /***************************************************************************/
+/* TYPE DEFINITIONS                                                        */
+/***************************************************************************/
+typedef enum
+{
+   INIT           = 0,
+   RUNNING        = 1,
+   SLEEP_DETECTED = 2,
+   SLEEPING       = 3,
+   WAKEUP         = 4,
+   ERROR          = 5
+} state_t;
+
+/***************************************************************************/
 /* DEFINITIONS                                                             */
 /***************************************************************************/
 
+// DEBUGGING
+//#define ___SIMULATION___
 
 /***************************************************************************/
 /* INT0 trigger definition                                                 */
@@ -61,12 +76,14 @@
 /*   1   1   0 Standby                                                     */
 /***************************************************************************/
 //#define AVR_SLEEP_MODE           (1 << SM1)
+#define AVR_SLEEP_MODE           SLEEP_MODE_PWR_DOWN
 
 
 /***************************************************************************/
 /* HELPER ROUTINES                                                         */
 /***************************************************************************/
 
+#ifndef ___SIMULATION___
 /**
  * @brief sends message to CAN2 and filling up converted data
  *
@@ -75,6 +92,6 @@
  * @param pointer to CAN message
  */
 void sendCan2Message(can_t* msg);
-
+#endif
 
 #endif /* CAN2MATRIX_H_ */

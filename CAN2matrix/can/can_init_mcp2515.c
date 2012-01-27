@@ -286,18 +286,14 @@ void setup_interrupt_pins(eChipSelect chip)
 {
    if(CAN_CHIP1 == chip)
    {
-      // set interrupt pin to input
-      PIN_SET_INPUT(CHIP1_INT_PIN);
-      // set /INT to high to get transitions (and internal pull-up resistor)
-      SET_PIN(CHIP1_INT_PIN);
+      // set interrupt pin to input and internal pull-up resistor
+      PIN_SET_PULLUP(CHIP1_INT_PIN);
    } /* end of if CAN1 */
    else
    {
-      // set interrupt pin to input
-      PIN_SET_INPUT(CHIP2_INT_PIN);
-      // set /INT to high to get transitions
-      SET_PIN(CHIP2_INT_PIN);
-   } /* end of else CAN 2 */
+      // set interrupt pin to input and internal pull-up resistor
+      PIN_SET_PULLUP(CHIP2_INT_PIN);
+   } /* end of else CAN2 */
 }
 
 /* @brief setting up the chip select pins

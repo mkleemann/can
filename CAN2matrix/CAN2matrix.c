@@ -40,6 +40,222 @@ static volatile state_t fsmState     = INIT;
 
 int main(void)
 {
+   initHardware();
+
+   if (true == initCAN())
+   {
+      // start normal operation
+      fsmState = RUNNING;
+
+      // enable all (configured) interrupts
+      sei();
+
+      while (1)
+      {
+         switch (fsmState)
+         {
+         case SLEEP_DETECTED :
+            sleepDetected();
+            // set status
+            fsmState = SLEEPING;
+            break;
+
+         case WAKEUP :
+            wakeUp();
+            // woken up
+            fsmState = RUNNING;
+            break;
+
+         case RUNNING:
+            run();
+            break;
+
+         default :
+            errorState();
+            // set status
+            fsmState = ERROR;
+            break;
+         }
+      } /* end of while(1) */
+   } /* end of else do it */
+
+#ifndef ___SIMULATION___
+   errorState();
+#endif
+} /* end of main() */
+
+
+/***************************************************************************/
+/* HELPER ROUTINES                                                         */
+/***************************************************************************/
+/**
+ * @brief sends message to CAN2 and filling up converted data
+ *
+ * Note: Set message id before calling this function.
+ *
+ * @param pointer to CAN message
+ */
+#ifndef ___SIMULATION___
+void sendCan2Message(can_t* msg)
+{
+   fillInfoToCAN2(msg);
+
+   // send message
+   can_send_message(CAN_CHIP2, msg);
+
+   // signal activity
+   led_toggle(txCan2LED);
+}
+#endif
+
+/**
+ * @brief got to sleep mode. Deactivate CAN and set the sleep mode.
+ */
+void sleepDetected()
+{
+   // stop timer for now
+   stopTimer2();
+   stopTimer1();
+
+   // (re)set global flags
+   send_it  = 0;
+
+#ifndef ___SIMULATION___
+   // put MCP25* to sleep for CAN2 and activate after activity on CAN1
+   // This has to be done before master CAN goes to sleep, because
+   // the clock of the slave chip may be taken from master CAN chip's
+   // CLKOUT pin.
+   mcp2515_sleep(CAN_CHIP2, INT_SLEEP_MANUAL_WAKEUP);
+
+   // put MCP2515 to sleep and wait for activity interrupt
+   mcp2515_sleep(CAN_CHIP1, INT_SLEEP_WAKEUP_BY_CAN);
+#endif
+
+   // low power consumption
+   led_all_off();
+
+   // enable wakeup interrupt INT0
+   GICR |= EXTERNAL_INT0_ENABLE;
+
+#ifdef ___AVR_SLEEP_ON___
+   // let's sleep...
+   set_sleep_mode(AVR_SLEEP_MODE);
+   sleep_mode();
+   _NOP();
+   _NOP();
+   _NOP();    // just in case...
+#endif
+}
+
+/**
+ * @brief Wake up CAN and reinitialize the timer
+ */
+void wakeUp()
+{
+#ifndef ___SIMULATION___
+   // wakeup all CAN busses
+   mcp2515_wakeup(CAN_CHIP1);
+   _delay_ms(10);       // wait for clock of CAN1 to be ready
+   mcp2515_wakeup(CAN_CHIP2);
+#endif
+
+   // set timer counter to initial value
+   restartTimer1();
+   restartTimer2();
+
+   // start timer
+   startTimer2();
+   startTimer1();
+
+   // debugging ;-)
+   led_on(sleepLed);
+}
+
+/**
+ * @brief Do all the work.
+ */
+void run()
+{
+#ifndef ___SIMULATION___
+   /**** GET MESSAGES FROM CAN1 ***********************************/
+   can_t msg;
+
+   if (can_check_message_received(CAN_CHIP1))
+   {
+      // try to read message
+      if (can_get_message(CAN_CHIP1, &msg))
+      {
+         // reset timer, since there is activity on master CAN bus
+         restartTimer1();
+
+         // fetch information from CAN1
+         fetchInfoFromCAN1(&msg);
+
+         // signal activity
+         led_toggle(rxCan1LED);
+      } /* end of if message is read */
+   } /* end of if check message received on CAN1 */
+
+   /**** PUT MESSAGES ON CAN2 *************************************/
+
+   if (send100ms)    // approx. 100ms 4MHz@1024 prescale factor
+   {
+      send100ms = false;
+
+      msg.msgId = CANID_2_IGNITION;
+      sendCan2Message(&msg);
+
+      msg.msgId = CANID_2_WHEEL_DATA;  // should be 50ms, but keep it
+      sendCan2Message(&msg);
+   } /* end of if 100ms tick */
+
+   if (send500ms)   // approx. 500ms 4MHz@1024 prescale factor
+   {
+      send500ms = false;
+
+      msg.msgId = CANID_2_REVERSE_GEAR;
+      sendCan2Message(&msg);
+   } /* end of if 500ms tick */
+
+   /**** GET MESSAGES FROM CAN2 ***********************************/
+
+   // empty read buffers and get information
+   if (can_check_message_received(CAN_CHIP2))
+   {
+      // try to read message
+      if (can_get_message(CAN_CHIP2, &msg))
+      {
+         // fetch information from CAN2
+         fetchInfoFromCAN2(&msg);
+      } /* end of if message is read */
+   } /* end of if check message received on CAN2 */
+#else
+   // for simulation purposes
+   led_toggle(errCan1LED);
+#endif
+}
+
+/**
+ * @brief Error state. Call this when an illegal state is reached.
+ */
+void errorState()
+{
+   // error handling, if CAN initialization failed
+   stopTimer2();
+   while (1)
+   {
+      if (send500ms)   // approx. 500ms 4MHz@1024 prescale factor
+      {
+         led_toggle(sleepLed);
+      } /* end of if 500ms tick */
+   } /* end of while(1) - error handling */
+}
+
+/**
+ * @brief Initialize LED, Timer and SPI.
+ */
+void initHardware()
+{
    // init LED output
    led_init();
    // show start of initialization
@@ -52,14 +268,14 @@ int main(void)
    initTimer1(TimerCompare);
    startTimer1();
    led_off(errCan1LED); // step 1
+
    // set timer for CAN 100ms trigger
    initTimer2(TimerCompare);
    startTimer2();
    led_off(errCan2LED); // step 2
+
    // configure wakeup interrupt INT0 for later use
    MCUCR |= EXTERNAL_INT0_TRIGGER;
-   // enable all (configured) interrupts
-   sei();
    led_off(txCan2LED);  // step 3
 
    // initialize the hardware SPI with default values set in spi/spi_config.h
@@ -68,6 +284,16 @@ int main(void)
 
    // end of common initialization
    led_off(rxCan1LED);  // step 4
+}
+
+/**
+ * @brief Initialize the CAN controllers
+ *
+ * @return true if all is ok. Otherwise false is returned.
+ */
+bool initCAN()
+{
+   bool retVal = true;
 
 #ifndef ___SIMULATION___
    // init can interface 1
@@ -75,165 +301,19 @@ int main(void)
    {
       // signal error on initialization
       led_on(errCan1LED);
+      retVal = false;
    } /* end of init CAN1 failed */
-   else if(false == can_init_mcp2515(CAN_CHIP2, CAN_BITRATE_125_KBPS))
+   else if (false == can_init_mcp2515(CAN_CHIP2, CAN_BITRATE_125_KBPS))
    {
       // signal error on initialization
       led_on(errCan2LED);
+      retVal = false
    } /* end of else init failed CAN2 */
-   else
-   {
 #endif
-      // start normal operation
-      fsmState = RUNNING;
-      while (1)
-      {
-         /**** SLEEP *******************************************************/
-         if (SLEEP_DETECTED == fsmState)
-         {
-            // stop timer for now
-            stopTimer2();
-            stopTimer1();
-            // (re)set global flags
-            send_it  = 0;
-#ifndef ___SIMULATION___
-            // put MCP25* to sleep for CAN2 and activate after activity on CAN1
-            // This has to be done before master CAN goes to sleep, because
-            // the clock of the slave chip may be taken from master CAN chip's
-            // CLKOUT pin.
-            mcp2515_sleep(CAN_CHIP2, INT_SLEEP_MANUAL_WAKEUP);
-            // put MCP2515 to sleep and wait for activity interrupt
-            mcp2515_sleep(CAN_CHIP1, INT_SLEEP_WAKEUP_BY_CAN);
-#endif
-            // low power consumption
-            led_all_off();
-            // enable wakeup interrupt INT0
-            GICR |= EXTERNAL_INT0_ENABLE;
-            // set status
-            fsmState = SLEEPING;
-#ifdef ___AVR_SLEEP_ON___
-            // let's sleep...
-            set_sleep_mode(AVR_SLEEP_MODE);
-            sleep_mode();
-            _NOP(); _NOP(); _NOP();    // just in case...
-#endif
-         } /* end of if no message received for 15 seconds */
 
-         /**** WAKEUP ******************************************************/
-         if (WAKEUP == fsmState)
-         {
-#ifndef ___SIMULATION___
-            // wakeup all CAN busses
-            mcp2515_wakeup(CAN_CHIP1);
-            _delay_ms(10);       // wait for clock of CAN1 to be ready
-            mcp2515_wakeup(CAN_CHIP2);
-#endif
-            // set timer counter to initial value
-            restartTimer1();
-            restartTimer2();
-            // start timer
-            startTimer2();
-            startTimer1();
-            // debugging ;-)
-            led_on(sleepLed);
-            // woken up
-            fsmState = RUNNING;
-         } /* end of if wakeup flag set */
-
-         if(RUNNING == fsmState)
-         {
-#ifndef ___SIMULATION___
-            /**** GET MESSAGES FROM CAN1 ***********************************/
-            can_t msg;
-
-            if(can_check_message_received(CAN_CHIP1))
-            {
-               // try to read message
-               if (can_get_message(CAN_CHIP1, &msg))
-               {
-                  // reset timer, since there is activity on master CAN bus
-                  restartTimer1();
-                  // fetch information from CAN1
-                  fetchInfoFromCAN1(&msg);
-                  // signal activity
-                  led_toggle(rxCan1LED);
-               } /* end of if message is read */
-            } /* end of if check message received on CAN1 */
-
-            /**** PUT MESSAGES ON CAN2 *************************************/
-
-            if (send100ms)    // approx. 100ms 4MHz@1024 prescale factor
-            {
-               send100ms = false;
-               msg.msgId = CANID_2_IGNITION;
-               sendCan2Message(&msg);
-               msg.msgId = CANID_2_WHEEL_DATA;  // should be 50ms, but keep it
-               sendCan2Message(&msg);
-            } /* end of if 100ms tick */
-
-            if(send500ms)    // approx. 500ms 4MHz@1024 prescale factor
-            {
-               send500ms = false;
-               msg.msgId = CANID_2_REVERSE_GEAR;
-               sendCan2Message(&msg);
-            } /* end of if 500ms tick */
-
-            /**** GET MESSAGES FROM CAN2 ***********************************/
-
-            // empty read buffers and get information
-            if(can_check_message_received(CAN_CHIP2))
-            {
-               // try to read message
-               if (can_get_message(CAN_CHIP2, &msg))
-               {
-                  // fetch information from CAN2
-                  fetchInfoFromCAN2(&msg);
-               } /* end of if message is read */
-            } /* end of if check message received on CAN2 */
-#else
-            // for simulation purposes
-            led_toggle(errCan1LED);
-#endif
-         } /* end of if no bussleep and no wakeup running */
-      } /* end of while(1) */
-#ifndef ___SIMULATION___
-   } /* end of else do it */
-
-   // set status
-   fsmState = ERROR;
-   // error handling, if CAN initialization failed
-   stopTimer2();
-   while(1)
-   {
-      if(send500ms)    // approx. 500ms 4MHz@1024 prescale factor
-      {
-         led_toggle(sleepLed);
-      } /* end of if 500ms tick */
-   } /* end of while(1) - error handling */
-#endif
-} /* end of main() */
-
-
-/***************************************************************************/
-/* HELPER ROUTINES                                                         */
-/***************************************************************************/
-#ifndef ___SIMULATION___
-/**
- * @brief sends message to CAN2 and filling up converted data
- *
- * Note: Set message id before calling this function.
- *
- * @param pointer to CAN message
- */
-void sendCan2Message(can_t* msg)
-{
-   fillInfoToCAN2(msg);
-   // send message
-   can_send_message(CAN_CHIP2, msg);
-   // signal activity
-   led_toggle(txCan2LED);
+   return retVal;
 }
-#endif
+
 
 /***************************************************************************/
 /* INTERRUPT SERVICE ROUTINES                                              */

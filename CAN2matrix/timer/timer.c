@@ -124,7 +124,18 @@ void stopTimer1()
  */
 void restartTimer1()
 {
+   stopTimer1();
    TCNT1 = 0;                                   // reset counter register
+   startTimer1();
+}
+
+/**
+ * @brief set timer1 counter register to value
+ * @param timer counter value
+ */
+void setTimer1Count(uint16_t value)
+{
+   TCNT1 = value;
 }
 
 
@@ -195,7 +206,18 @@ void stopTimer2()
  */
 void restartTimer2()
 {
+   stopTimer2();
    TCNT2 = 0;                                   // reset counter register
+   startTimer2();
+}
+
+/**
+ * @brief set timer2 counter register to value
+ * @param timer counter value
+ */
+void setTimer2Count(uint8_t value)
+{
+   TCNT2 = value;
 }
 
 

@@ -125,6 +125,11 @@ void stopTimer1(void);
  */
 void restartTimer1(void);
 
+/**
+ * @brief set timer counter register to value
+ * @param timer counter value
+ */
+void setTimer1Count(uint16_t value);
 
 /***************************************************************************/
 /* TIMER 2                                                                 */
@@ -150,5 +155,12 @@ void stopTimer2(void);
  * @brief restart Timer2, e.g. in compare mode
  */
 void restartTimer2(void);
+
+/**
+ * @brief set timer counter register to value
+ * @param timer counter value
+ */
+void setTimer2Count(uint8_t value);
+
 
 #endif /* TIMER_H_ */

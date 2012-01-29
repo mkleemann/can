@@ -21,6 +21,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <avr/sleep.h>
+#include <avr/cpufunc.h>
 #include <util/delay.h>
 
 #include "util/util.h"
@@ -54,34 +55,36 @@ int main(void)
       {
          switch (fsmState)
          {
-         case SLEEP_DETECTED :
-            sleepDetected();
-            // set status
-            fsmState = SLEEPING;
-            break;
+            case RUNNING:
+               run();
+               break;
 
-         case WAKEUP :
-            wakeUp();
-            // woken up
-            fsmState = RUNNING;
-            break;
+            case WAKEUP:
+               wakeUp();
+               // woken up
+               fsmState = RUNNING;
+               break;
 
-         case RUNNING:
-            run();
-            break;
+            case SLEEP_DETECTED:
+               sleepDetected();
+               // set status
+               fsmState = SLEEPING;
+               break;
 
-         default :
-            errorState();
-            // set status
-            fsmState = ERROR;
-            break;
+            case SLEEPING:
+               // This state might be used, even when AVR is sleeping!
+               break;
+
+            default:
+               errorState();
+               // set status
+               fsmState = ERROR;
+               break;
          }
-      } /* end of while(1) */
-   } /* end of CAN inits successfully */
+      }
+   }
 
-#ifndef ___SIMULATION___
    errorState();
-#endif
 } /* end of main() */
 
 
@@ -114,8 +117,8 @@ void sendCan2Message(can_t* msg)
 void sleepDetected()
 {
    // stop timer for now
-   stopTimer2();
    stopTimer1();
+   stopTimer2();
 
    // (re)set global flags
    send_it  = 0;
@@ -125,7 +128,9 @@ void sleepDetected()
    // This has to be done before master CAN goes to sleep, because
    // the clock of the slave chip may be taken from master CAN chip's
    // CLKOUT pin.
+#ifndef ___SINGLE_CAN___
    mcp2515_sleep(CAN_CHIP2, INT_SLEEP_MANUAL_WAKEUP);
+#endif
 
    // put MCP2515 to sleep and wait for activity interrupt
    mcp2515_sleep(CAN_CHIP1, INT_SLEEP_WAKEUP_BY_CAN);
@@ -135,12 +140,15 @@ void sleepDetected()
    led_all_off();
 
    // enable wakeup interrupt INT0
-   GICR |= EXTERNAL_INT0_ENABLE;
+   MCUCR |= EXTERNAL_INT0_TRIGGER;
+   GICR  |= EXTERNAL_INT0_ENABLE;
 
 #ifdef ___AVR_SLEEP_ON___
    // let's sleep...
    set_sleep_mode(AVR_SLEEP_MODE);
    sleep_mode();
+   _NOP();
+   _NOP();
    _NOP();
    _NOP();
    _NOP();    // just in case...
@@ -155,16 +163,14 @@ void wakeUp()
 #ifndef ___SIMULATION___
    // wakeup all CAN busses
    mcp2515_wakeup(CAN_CHIP1);
+#ifndef ___SINGLE_CAN___
    _delay_ms(10);       // wait for clock of CAN1 to be ready
    mcp2515_wakeup(CAN_CHIP2);
 #endif
+#endif
 
-   // set timer counter to initial value
    restartTimer1();
    restartTimer2();
-
-   startTimer2();
-   startTimer1();
 
    // debugging ;-)
    led_on(sleepLed);
@@ -184,19 +190,22 @@ void run()
       // try to read message
       if (can_get_message(CAN_CHIP1, &msg))
       {
-         // reset timer, since there is activity on master CAN bus
-         restartTimer1();
+         // reset timer counter, since there is activity on master CAN bus
+         setTimer1Count(0);
 
          // fetch information from CAN1
          fetchInfoFromCAN1(&msg);
-
+#ifdef ___SINGLE_CAN___
+         msg.msgId += 10;
+         can_send_message(CAN_CHIP1, &msg);
+#endif
          // signal activity
          led_toggle(rxCan1LED);
       } /* end of if message is read */
    } /* end of if check message received on CAN1 */
 
    /**** PUT MESSAGES ON CAN2 *************************************/
-
+#ifndef ___SINGLE_CAN___
    if (send100ms)    // approx. 100ms 4MHz@1024 prescale factor
    {
       send100ms = false;
@@ -228,9 +237,13 @@ void run()
          fetchInfoFromCAN2(&msg);
       } /* end of if message is read */
    } /* end of if check message received on CAN2 */
+#endif
 #else
-   // for simulation purposes
-   led_toggle(errCan1LED);
+   if (send500ms)   // approx. 500ms 4MHz@1024 prescale factor
+   {
+      send500ms = false;
+      led_toggle(errCan1LED);
+   } /* end of if 500ms tick */
 #endif
 }
 
@@ -239,12 +252,14 @@ void run()
  */
 void errorState()
 {
-   // error handling, if CAN initialization failed
-   stopTimer2();
+   // error handling, e.g. init failed
+   stopTimer1();
+   restartTimer2();     // may be stopped, due to sleep mode
    while (1)
    {
-      if (send500ms)   // approx. 500ms 4MHz@1024 prescale factor
+      if (send500ms)    // approx. 500ms 4MHz@1024 prescale factor
       {
+         send500ms = false;
          led_toggle(sleepLed);
       } /* end of if 500ms tick */
    } /* end of while(1) - error handling */
@@ -273,8 +288,6 @@ void initHardware()
    startTimer2();
    led_off(errCan2LED); // step 2
 
-   // configure wakeup interrupt INT0 for later use
-   MCUCR |= EXTERNAL_INT0_TRIGGER;
    led_off(txCan2LED);  // step 3
 
    // initialize the hardware SPI with default values set in spi/spi_config.h
@@ -296,18 +309,20 @@ bool initCAN()
 
 #ifndef ___SIMULATION___
    // init can interface 1
-   if (false == can_init_mcp2515(CAN_CHIP1, CAN_BITRATE_100_KBPS))
+   if (false == can_init_mcp2515(CAN_CHIP1, CAN_BITRATE_125_KBPS))
    {
       // signal error on initialization
       led_on(errCan1LED);
       retVal = false;
    } /* end of init CAN1 failed */
+#ifndef ___SINGLE_CAN___
    else if (false == can_init_mcp2515(CAN_CHIP2, CAN_BITRATE_125_KBPS))
    {
       // signal error on initialization
       led_on(errCan2LED);
       retVal = false;
    } /* end of else init failed CAN2 */
+#endif
 #endif
 
    return retVal;
@@ -337,6 +352,7 @@ ISR(TIMER2_COMP_vect)
 ISR(INT0_vect)
 {
    // disable interrupt: precaution, if signal lies too long on pin
+   MCUCR &= ~(EXTERNAL_INT0_TRIGGER);
    GICR  &= ~(EXTERNAL_INT0_ENABLE);
    led_toggle(errCan2LED);
    fsmState = WAKEUP;

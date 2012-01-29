@@ -38,8 +38,13 @@ typedef enum
 /* DEFINITIONS                                                             */
 /***************************************************************************/
 
-// DEBUGGING
-//#define ___SIMULATION___
+/*** DEBUGGING *************************************************************/
+
+// use this to cut off all CAN handling
+#define ___SIMULATION___
+
+// use only CAN1 - read messages and put them back on bus with msgId += 10
+//#define ___SINGLE_CAN___
 
 /***************************************************************************/
 /* INT0 trigger definition                                                 */

@@ -33,8 +33,8 @@ activity).
 
 On a solderless breadboard it works just fine. A first version on a PCB based
 one (soldered) has its difficulties to startup every time or after a sleep
-cycle. It feels, like the wires are too long or have some influences to each
-other with causes this. Now to investigate...
+cycle. It feels like the wires are too long or have some influences to each
+other which causes this. Now to investigate...
 
 Note: Only standard CAN frames are supported right now.
 

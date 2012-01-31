@@ -57,30 +57,40 @@ int main(void)
          switch (fsmState)
          {
             case RUNNING:
+            {
                run();
                break;
+            }
 
             case WAKEUP:
+            {
                wakeUp();
                // woken up
                fsmState = RUNNING;
                break;
+            }
 
             case SLEEP_DETECTED:
+            {
                // Set status first here. After wakeup we leave this function.
                fsmState = SLEEPING;
                sleepDetected();
                break;
+            }
 
             case SLEEPING:
-               // This state might be used, even when AVR is sleeping!
+            {
+               // This state might be ran through, even when AVR is sleeping.
                break;
+            }
 
             default:
+            {
                errorState();
                // set status
                fsmState = ERROR;
                break;
+            }
          }
       }
    }
@@ -92,6 +102,7 @@ int main(void)
 /***************************************************************************/
 /* HELPER ROUTINES                                                         */
 /***************************************************************************/
+
 /**
  * @brief sends message to CAN2 and filling up converted data
  *

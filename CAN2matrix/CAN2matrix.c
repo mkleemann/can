@@ -32,7 +32,7 @@
 #include "CAN2matrix.h"
 #include "matrix.h"
 
-//#define ___AVR_SLEEP_ON___
+#define ___AVR_SLEEP_ON___
 
 static volatile uint8_t send_it      = 0;
 static volatile bool    send100ms    = false;
@@ -47,6 +47,7 @@ int main(void)
    {
       // start normal operation
       fsmState = RUNNING;
+      led_on(sleepLed);
 
       // enable all (configured) interrupts
       sei();
@@ -66,9 +67,9 @@ int main(void)
                break;
 
             case SLEEP_DETECTED:
-               sleepDetected();
-               // set status
+               // Set status first here. After wakeup we leave this function.
                fsmState = SLEEPING;
+               sleepDetected();
                break;
 
             case SLEEPING:
@@ -116,6 +117,7 @@ void sendCan2Message(can_t* msg)
  */
 void sleepDetected()
 {
+   cli();
    // stop timer for now
    stopTimer1();
    stopTimer2();
@@ -140,18 +142,26 @@ void sleepDetected()
    led_all_off();
 
    // enable wakeup interrupt INT0
-   MCUCR |= EXTERNAL_INT0_TRIGGER;
    GICR  |= EXTERNAL_INT0_ENABLE;
 
 #ifdef ___AVR_SLEEP_ON___
    // let's sleep...
    set_sleep_mode(AVR_SLEEP_MODE);
-   sleep_mode();
+   // sleep_mode() has a possible race condition in it, so splitting it
+   sleep_enable();
+   sei();
+   sleep_cpu();
+   sleep_disable();
+
+   // disable interrupt: precaution, if signal lies too long on pin
+   GICR  &= ~(EXTERNAL_INT0_ENABLE);
+
+   // just in case...
    _NOP();
    _NOP();
    _NOP();
-   _NOP();
-   _NOP();    // just in case...
+#else
+   sei();
 #endif
 }
 
@@ -160,6 +170,7 @@ void sleepDetected()
  */
 void wakeUp()
 {
+   cli();
 #ifndef ___SIMULATION___
    // wakeup all CAN busses
    mcp2515_wakeup(CAN_CHIP1);
@@ -171,6 +182,8 @@ void wakeUp()
 
    restartTimer1();
    restartTimer2();
+
+   sei();
 
    // debugging ;-)
    led_on(sleepLed);
@@ -272,30 +285,21 @@ void initHardware()
 {
    // init LED output
    led_init();
-   // show start of initialization
-   led_all_on();
-#ifndef ___SIMULATION___
-   _delay_ms(50);
-#endif
 
    // set timer for bussleep detection
    initTimer1(TimerCompare);
    startTimer1();
-   led_off(errCan1LED); // step 1
 
    // set timer for CAN 100ms trigger
    initTimer2(TimerCompare);
    startTimer2();
-   led_off(errCan2LED); // step 2
-
-   led_off(txCan2LED);  // step 3
 
    // initialize the hardware SPI with default values set in spi/spi_config.h
    spi_pin_init();
    spi_master_init();
 
-   // end of common initialization
-   led_off(rxCan1LED);  // step 4
+   // set wakeup interrupt trigger on low level
+   MCUCR |= EXTERNAL_INT0_TRIGGER;
 }
 
 /**
@@ -351,9 +355,10 @@ ISR(TIMER2_COMP_vect)
 // External Interrupt0 handler to wake up from CAN activity
 ISR(INT0_vect)
 {
+#ifndef ___AVR_SLEEP_ON___
    // disable interrupt: precaution, if signal lies too long on pin
-   MCUCR &= ~(EXTERNAL_INT0_TRIGGER);
    GICR  &= ~(EXTERNAL_INT0_ENABLE);
+#endif
    led_toggle(errCan2LED);
    fsmState = WAKEUP;
 }

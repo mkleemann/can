@@ -175,7 +175,7 @@ void wakeUp()
    // wakeup all CAN busses
    mcp2515_wakeup(CAN_CHIP1);
 #ifndef ___SINGLE_CAN___
-   _delay_ms(10);       // wait for clock of CAN1 to be ready
+   _delay_ms(100);       // wait for clock of CAN1 to be ready
    mcp2515_wakeup(CAN_CHIP2);
 #endif
 #endif

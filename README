@@ -8,14 +8,15 @@ Single CAN solutions exist, but often they lack in something or other. So I
 used the tips and tricks to combine such solutions.
 
 *****************************************************************************
-* Note: The project is AVRStudio 5 based, so no makefile for WINAVR or any  *
-*       other toolchain available (yet).                                    *
+* Note: The project is AVRStudio 5 based. A makefile for WINAVR or any      *
+*       other VAR toolchain is only maintained from time to time.           *
 *****************************************************************************
 
 Both CAN buses (could) use a different bitrate. Only a small number of
 signals are needed to communicate between buses. Sleep and/or power down
 functionality is a must, if you don't want to help your car waking up after
-a weekend ;-). Of course, if you have access to information, make use of it.
+a weekend. Of course, if you have access to other information, make use of
+it.
 
 Current Stage:
 ==============
@@ -30,6 +31,11 @@ activity. CAN2 (slave) will be powered down completely with MCP2551. AVR goes
 down on power down mode with INT0 enabled to wake it up (wake on CAN
 activity).
 
+On a solderless breadboard it works just fine. A first version on a PCB based
+one (soldered) has its difficulties to startup every time or after a sleep
+cycle. It feels, like the wires are too long or have some influences to each
+other with causes this. Now to investigate...
+
 Note: Only standard CAN frames are supported right now.
 
 Next Steps/Ideas:
@@ -42,7 +48,7 @@ Next Steps/Ideas:
 
 - (D) Power Down (all chips including AVR) by CAN bus sleep
 - (T) Wake Up by CAN activity on the (master) bus (MCP25*) - new hardware
-- (T) Wake Up by CAN activity for AVR itself
+- (D) Wake Up by CAN activity for AVR itself
 - (P) Implement "The CAN Matrix" in code
 - (O) Additional functionality, like PDC distance showed by LEDs
 - (O) EEPROM use for message matrix

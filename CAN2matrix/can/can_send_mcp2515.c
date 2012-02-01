@@ -77,6 +77,7 @@ uint8_t can_send_message(eChipSelect   chip,
    // standard msg id
    spi_putc(msg->msgId >> 3);                // TXBxSIDH
    spi_putc(msg->msgId << 5);                // TXBxSIDL
+
    // extended id - not used
    spi_putc(0);                              // TXBxEID8
    spi_putc(0);                              // TXBxEID0

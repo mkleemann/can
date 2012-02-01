@@ -13,7 +13,7 @@
 /**
  * timer.c
  *
- * Note: It is assumed to use an ATmega8.
+ * Note: It is assumed to use an ATmega8 here.
  *
  * Created: 28.11.2011 18:17:39
  *  Author: MKleemann
@@ -32,8 +32,8 @@
  */
 void initTimer0()
 {
-   TIMSK |= (1 << TOIE0);                       // interrupt enable - here overflow
-   TCCR0  = 0;                                  // init and stop timer
+   TIMSK |= (1 << TOIE0);        // overflow interrupt enable
+   TCCR0  = 0;                   // init and stop timer
 }
 
 /**
@@ -41,7 +41,7 @@ void initTimer0()
  */
 void startTimer0()
 {
-   TCCR0 |= TIMER0_PRESCALER;                   // use defined prescaler value
+   TCCR0 |= TIMER0_PRESCALER;
 }
 
 /**
@@ -67,40 +67,44 @@ void initTimer1(eTimerMode mode)
 
    switch(mode)
    {
-      case TimerOverflow:                       // overflow interrupt
+      case TimerOverflow:
       {
-         TIMSK |= (1 << TOIE1);                 // set overflow interrupt enable
+         TIMSK |= (1 << TOIE1);  // set overflow interrupt enable
          break;
-      } /* end of case TimerOverflow */
-      case TimerCompare:                        // Fast PWM with 16-bit compare
+      }
+
+      case TimerCompare:
       {
-         // use Fast PWM and ICR for compare mode (14) to get long periods
+         // use Fast PWM and ICR for 16-bit compare mode (14) to get long periods
          TIMSK       |= (1 << TICIE1);                   // set input capture interrupt enable
          ctrlRegValA |= (1 << WGM11);                    // set Fast PWM mode with ICR1 as compare register
          ctrlRegValB |= (1 << WGM13) | (1 << WGM12);     // set Fast PWM mode with ICR1 as compare register
          ICR1H        = (TIMER1_COMPARE_VALUE >> 8);     // set compare value for interrupt
          ICR1L        = (TIMER1_COMPARE_VALUE & 0xFF);   // set compare value for interrupt
          break;
-      } /* end of case TimerCompare */          // phase correct PWM
+      }
+
       case TimerPwm:
       {
          // TODO: fill in initialization for PWM mode of Timer1
          break;
-      } /* end of case TimerPwm */
-      case TimerFastPwm:                        // Fast PWM
+      }
+
+      case TimerFastPwm:
       {
          // TODO: fill in initialization for Fast PWM mode of Timer1
          break;
-      } /* end of case TimerFastPwm */
+      }
+
       default:
       {
          // nothing to do...yet.
          break;
-      } /* end of default */
-   } /* end of switch mode */
+      }
+   }
 
-   TCCR1A = ctrlRegValA;                        // init & stop timer
-   TCCR1B = ctrlRegValB;                        // init & stop timer
+   TCCR1A = ctrlRegValA;         // init & stop timer
+   TCCR1B = ctrlRegValB;         // init & stop timer
 }
 
 /**
@@ -108,7 +112,7 @@ void initTimer1(eTimerMode mode)
  */
 void startTimer1()
 {
-   TCCR1B |= TIMER1_PRESCALER;                  // use defined prescaler value
+   TCCR1B |= TIMER1_PRESCALER;   // use defined prescaler value
 }
 
 /**
@@ -125,7 +129,7 @@ void stopTimer1()
 void restartTimer1()
 {
    stopTimer1();
-   TCNT1 = 0;                                   // reset counter register
+   setTimer1Count(0);            // reset counter register
    startTimer1();
 }
 
@@ -153,36 +157,40 @@ void initTimer2(eTimerMode mode)
 
    switch(mode)
    {
-      case TimerOverflow:                       // overflow interrupt
+      case TimerOverflow:        // overflow interrupt
       {
-         TIMSK |= (1 << TOIE2);                 // set overflow interrupt enable
+         TIMSK |= (1 << TOIE2);  // set overflow interrupt enable
          break;
-      } /* end of case TimerOverflow */
-      case TimerCompare:                        // CTC
+      }
+
+      case TimerCompare:         // CTC
       {
+         // phase correct PWM
          TIMSK       |= (1 << OCIE2);           // set output compare interrupt enable
          ctrlRegVal  |= (1 << WGM21);           // set CTC mode
          OCR2         = TIMER2_COMPARE_VALUE;   // set compare value for interrupt
          break;
-      } /* end of case TimerCompare */          // phase correct PWM
+      }
       case TimerPwm:
       {
          // TODO: fill in initialization for PWM mode of Timer2
          break;
-      } /* end of case TimerPwm */
-      case TimerFastPwm:                        // Fast PWM
+      }
+
+      case TimerFastPwm:         // Fast PWM
       {
          // TODO: fill in initialization for Fast PWM mode of Timer2
          break;
-      } /* end of case TimerFastPwm */
+      }
+
       default:
       {
          // nothing to do...yet.
          break;
-      } /* end of default */
-   } /* end of switch mode */
+      }
+   }
 
-   TCCR2 = ctrlRegVal;                          // init & stop timer
+   TCCR2 = ctrlRegVal;           // init & stop timer
 }
 
 /**
@@ -190,7 +198,7 @@ void initTimer2(eTimerMode mode)
  */
 void startTimer2()
 {
-   TCCR2 |= TIMER2_PRESCALER;                   // use defined prescaler value
+   TCCR2 |= TIMER2_PRESCALER;    // use defined prescaler value
 }
 
 /**
@@ -207,7 +215,7 @@ void stopTimer2()
 void restartTimer2()
 {
    stopTimer2();
-   TCNT2 = 0;                                   // reset counter register
+   setTimer2Count(0);            // reset counter register
    startTimer2();
 }
 

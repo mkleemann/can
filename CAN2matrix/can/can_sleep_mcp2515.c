@@ -48,7 +48,7 @@ void mcp2515_sleep(eChipSelect         chip,
    {
       // enable generating an interrupt for wakeup when activity on bus
       bit_modify_mcp2515(chip, CANINTE, (1 << WAKIE), (1 << WAKIE));
-   } /* end of how to wakeup */
+   }
 }
 
 

@@ -28,8 +28,6 @@
 
 /**
  * @brief global array to access LEDs via port pins directly
- *
- * TODO: rework
  */
 static ledType ledPins[NUM_OF_LEDS] = { P_LED0,
                                         P_LED1,
@@ -54,7 +52,7 @@ void led_init()
    for(i = 0; i < NUM_OF_LEDS; ++i)
    {
       *(ledPins[i].ddr) |= (1<<ledPins[i].pin);
-   } /* end of for 0..NUM_OF_LEDS-1 */
+   }
 }
 
 /* @brief  switches a led defined by a number on
@@ -92,7 +90,7 @@ void led_all_off(void)
    for(int i = 0; i < NUM_OF_LEDS; ++i)
    {
       led_off(i);
-   } /* end of for 0..NUM_OF_LEDS-1 */
+   }
 }
 
 /**
@@ -103,7 +101,7 @@ void led_all_on(void)
    for(int i = 0; i < NUM_OF_LEDS; ++i)
    {
       led_on(i);
-   } /* end of for 0..NUM_OF_LEDS-1 */
+   }
 }
 
 

@@ -71,6 +71,7 @@ bool can_init_mcp2515(eChipSelect chip,
                       eCanBitRate bitrate)
 {
    bool retVal = false;
+
    if ((bitrate < NUM_OF_CAN_BITRATES) && (chip < NUM_OF_MCP2515))
    {
       // set interrupt pins
@@ -97,19 +98,20 @@ bool can_init_mcp2515(eChipSelect chip,
       if(read_register_mcp2515(chip, CNF1) != mcp2515_cnf[bitrate][0])
       {
          return false;
-      } /* end of if check if MCP2515 is accessible */
+      }
 
       // assume it works
       retVal = true;
 
       // initialize RX interrupts
       write_register_mcp2515(chip, CANINTE, (1<<RX1IE) | (1<<RX0IE));
+
 #ifdef ___MASTER_CAN_CLKOUT_ENABLE___
       // init CLKOUT on master CAN
       if(CAN_CHIP1 == chip)
       {  // prescaler is CLKPREx = 00 -> fosc/1
          bit_modify_mcp2515(chip, CANCTRL(0), (1 << CLKEN), (1 << CLKEN));
-      } /* end of if CLKEN on master CAN */
+      }
 #endif
 
       // clear filters
@@ -124,7 +126,8 @@ bool can_init_mcp2515(eChipSelect chip,
       write_register_mcp2515(chip, TXRTSCTRL, 0);
       // set MCP2515 into normal operations mode (no longer configurable)
       bit_modify_mcp2515(chip, CANCTRL(0), 0xE0, 0);
-   } /* end of check CAN bitrates available and available MCP2515 devices */
+   }
+
    return(retVal);
 }
 
@@ -250,24 +253,28 @@ void set_mode_mcp2515(eChipSelect   chip,
       {
          reg = (1 << REQOP0);
          break;
-      } /* end of case SLEEP_MODE */
+      }
+
       case LOOPBACK_MODE:
       {
          reg = (1 << REQOP1);
          break;
-      } /* end of case LOOPBACK_MODE */
+      }
+
       case LISTEN_ONLY_MODE:
       {
          reg = (1 << REQOP1) | (1 << REQOP0);
          break;
-      } /* end of case LISTEN_ONLY_MODE */
+      }
+
       case CONFIG_MODE:
       {
          reg = (1 << REQOP2);
          break;
-      } /* end of case CONFIG_MODE */
+      }
+
       // no default, since there is no other mode
-   } /* end of switch mode */
+   }
 
    // set the mode selected above
    bit_modify_mcp2515(chip, CANCTRL(0), MODE_SELECT_MASK, reg);
@@ -288,12 +295,12 @@ void setup_interrupt_pins(eChipSelect chip)
    {
       // set interrupt pin to input and internal pull-up resistor
       PIN_SET_PULLUP(CHIP1_INT_PIN);
-   } /* end of if CAN1 */
+   }
    else
    {
       // set interrupt pin to input and internal pull-up resistor
       PIN_SET_PULLUP(CHIP2_INT_PIN);
-   } /* end of else CAN2 */
+   }
 }
 
 /* @brief setting up the chip select pins
@@ -307,14 +314,14 @@ void setup_cs_pins(eChipSelect chip)
       SET_PIN(CHIP1_CS_PIN);
       // set /CS to output
       PIN_SET_OUTPUT(CHIP1_CS_PIN);
-   } /* end of if CAN1 */
+   }
    else
    {
       // set chip select pins to high to get transition for MCP2515
       SET_PIN(CHIP2_CS_PIN);
       // set /CS to output
       PIN_SET_OUTPUT(CHIP2_CS_PIN);
-   } /* end of else CAN 2 */
+   }
 }
 
 
@@ -327,12 +334,12 @@ void set_chip_select(eChipSelect chip)
    {
       // set chip select pins to high to get transition for MCP2515
       SET_PIN(CHIP1_CS_PIN);
-   } /* end of if CAN1 */
+   }
    else
    {
       // set chip select pins to high to get transition for MCP2515
       SET_PIN(CHIP2_CS_PIN);
-   } /* end of else CAN 2 */
+   }
 }
 
 /* @brief unset chip select for the right chip
@@ -344,12 +351,12 @@ void unset_chip_select(eChipSelect chip)
    {
       // set chip select pins to high to get transition for MCP2515
       RESET_PIN(CHIP1_CS_PIN);
-   } /* end of if CAN1 */
+   }
    else
    {
       // set chip select pins to high to get transition for MCP2515
       RESET_PIN(CHIP2_CS_PIN);
-   } /* end of else CAN 2 */
+   }
 }
 
 

@@ -27,14 +27,16 @@ bool can_check_message_received(eChipSelect chip)
 {
    // check if interrupt pin is (logical not) set - interrupt available
    bool retVal = false;
+
    if (CAN_CHIP1 == chip)
    {
       retVal = IS_SET(CHIP1_INT_PIN);
-   } /* end of if chip 1 */
+   }
    else
    {
       retVal = IS_SET(CHIP2_INT_PIN);
-   } /* end of else chip 2 */
+   }
+
    return(retVal);
 }
 
@@ -80,11 +82,12 @@ uint8_t can_get_message(eChipSelect chip,
    uint8_t byte1 = spi_putc(0xFF);
    uint8_t byte2 = spi_putc(0xFF);
    // TODO: implement extended id support
-   // check if extended id - not used yet
+   // check if standard frame - extended frames are not used yet
    if (0 == BIT_IS_SET(byte2, IDE))
    {
       msg->msgId  = (uint16_t) byte1 << 3;
       msg->msgId |=            byte2 >> 5;
+
       // extended id - not used
       spi_putc(0xFF);
       spi_putc(0xFF);
@@ -100,7 +103,7 @@ uint8_t can_get_message(eChipSelect chip,
       {
          msg->data[i] = spi_putc(0xFF);
       }
-   } /* end of if standard id */
+   }
 
    // set /CS
    set_chip_select(chip);
@@ -115,15 +118,16 @@ uint8_t can_get_message(eChipSelect chip,
       bit_modify_mcp2515(chip, CANINTF, (1 << RX1IF), 0);
    }
 
+   // check frame type (standard/extended)
    if (0 == BIT_IS_SET(byte2, IDE))
    {
       // return filter match status
       return(status & RXB_FILTERMATCHMASK) + 1;
-   } /* end of if standard id */
+   }
    else
    {
-      // not yet supported
+      // extended id not yet supported
       return(0);
-   } /* end of extended id */
+   }
 }
 

@@ -83,34 +83,28 @@ typedef enum
 //#define AVR_SLEEP_MODE           (1 << SM1)
 #define AVR_SLEEP_MODE           SLEEP_MODE_PWR_DOWN
 
-
 /***************************************************************************/
-/* HELPER ROUTINES                                                         */
+/* STATES OF FSM                                                           */
 /***************************************************************************/
-
-#ifndef ___SIMULATION___
-/**
- * @brief sends message to CAN2 and filling up converted data
- *
- * Note: Set message id before calling this function.
- *
- * @param pointer to CAN message
- */
-void sendCan2Message(can_t* msg);
-#endif
 
 /**
  * @brief Go to sleep mode. Deactivate CAN and set the sleep mode.
  */
 void sleepDetected(void);
 
+
 /**
- * @brief Wake up CAN and reinitialize the timer
+ * @brief enter AVR sleep mode
+ */
+void sleeping(void);
+
+/**
+ * @brief wake up CAN and reinitialize the timers
  */
 void wakeUp(void);
 
 /**
- * @brief Do all the work.
+ * @brief do all the work.
  */
 void run(void);
 
@@ -131,5 +125,43 @@ void initHardware(void);
  */
 bool initCAN(void);
 
+/***************************************************************************/
+/* HELPER ROUTINES                                                         */
+/***************************************************************************/
+
+#ifndef ___SIMULATION___
+/**
+ * @brief handles CAN1 reception
+ * @param pointer to message struct
+ */
+void handleCan1Reception(can_t* msg);
+
+/**
+ * @brief handles CAN2 reception
+ * @param pointer to message struct
+ */
+void handleCan2Reception(can_t* msg);
+
+/**
+ * @brief handle CAN1 transmission
+ * @param pointer to message struct
+ */
+void handleCan1transmission(can_t* msg);
+
+/**
+ * @brief handle CAN2 transmission
+ * @param pointer to message struct
+ */
+void handleCan2transmission(can_t* msg);
+
+/**
+ * @brief sends message to CAN2 and filling up converted data
+ *
+ * Note: Set message id before calling this function.
+ *
+ * @param pointer to CAN message
+ */
+void sendCan2Message(can_t* msg);
+#endif
 
 #endif /* CAN2MATRIX_H_ */

@@ -65,29 +65,26 @@ int main(void)
             case WAKEUP:
             {
                wakeUp();
-               // woken up
                fsmState = RUNNING;
                break;
             }
 
             case SLEEP_DETECTED:
             {
-               // Set status first here. After wakeup we leave this function.
-               fsmState = SLEEPING;
                sleepDetected();
+               fsmState = SLEEPING;
                break;
             }
 
             case SLEEPING:
             {
-               // This state might be ran through, even when AVR is sleeping.
+               sleeping();
                break;
             }
 
             default:
             {
                errorState();
-               // set status
                fsmState = ERROR;
                break;
             }
@@ -100,35 +97,14 @@ int main(void)
 
 
 /***************************************************************************/
-/* HELPER ROUTINES                                                         */
+/* STATES OF FSM                                                           */
 /***************************************************************************/
 
 /**
- * @brief sends message to CAN2 and filling up converted data
- *
- * Note: Set message id before calling this function.
- *
- * @param pointer to CAN message
- */
-#ifndef ___SIMULATION___
-void sendCan2Message(can_t* msg)
-{
-   fillInfoToCAN2(msg);
-
-   // send message
-   can_send_message(CAN_CHIP2, msg);
-
-   // signal activity
-   led_toggle(txCan2LED);
-}
-#endif
-
-/**
- * @brief Go to sleep mode. Deactivate CAN and set the sleep mode.
+ * @brief Deactivate CAN and timers.
  */
 void sleepDetected()
 {
-   cli();
    // stop timer for now
    stopTimer1();
    stopTimer2();
@@ -151,7 +127,14 @@ void sleepDetected()
 
    // low power consumption
    led_all_off();
+}
 
+/**
+ * @brief enter AVR sleep mode
+ */
+void sleeping()
+{
+   cli();
    // enable wakeup interrupt INT0
    GICR  |= EXTERNAL_INT0_ENABLE;
 
@@ -177,7 +160,7 @@ void sleepDetected()
 }
 
 /**
- * @brief Wake up CAN and reinitialize the timer
+ * @brief wake up CAN and reinitialize the timers
  */
 void wakeUp()
 {
@@ -201,66 +184,25 @@ void wakeUp()
 }
 
 /**
- * @brief Do all the work.
+ * @brief do all the work.
  */
 void run()
 {
 #ifndef ___SIMULATION___
-   /**** GET MESSAGES FROM CAN1 ***********************************/
    can_t msg;
 
-   if (can_check_message_received(CAN_CHIP1))
-   {
-      // try to read message
-      if (can_get_message(CAN_CHIP1, &msg))
-      {
-         // reset timer counter, since there is activity on master CAN bus
-         setTimer1Count(0);
+   /**** GET MESSAGES FROM CAN1 ***********************************/
 
-         // fetch information from CAN1
-         fetchInfoFromCAN1(&msg);
-#ifdef ___SINGLE_CAN___
-         msg.msgId += 10;
-         can_send_message(CAN_CHIP1, &msg);
-#endif
-         // signal activity
-         led_toggle(rxCan1LED);
-      } /* end of if message is read */
-   } /* end of if check message received on CAN1 */
+   handleCan1Reception(&msg);
 
-   /**** PUT MESSAGES ON CAN2 *************************************/
+   /**** PUT MESSAGES TO CAN2 *************************************/
+
 #ifndef ___SINGLE_CAN___
-   if (send100ms)    // approx. 100ms 4MHz@1024 prescale factor
-   {
-      send100ms = false;
-
-      msg.msgId = CANID_2_IGNITION;
-      sendCan2Message(&msg);
-
-      msg.msgId = CANID_2_WHEEL_DATA;  // should be 50ms, but keep it
-      sendCan2Message(&msg);
-   } /* end of if 100ms tick */
-
-   if (send500ms)   // approx. 500ms 4MHz@1024 prescale factor
-   {
-      send500ms = false;
-
-      msg.msgId = CANID_2_REVERSE_GEAR;
-      sendCan2Message(&msg);
-   } /* end of if 500ms tick */
+   handleCan2transmission(&msg);
 
    /**** GET MESSAGES FROM CAN2 ***********************************/
 
-   // empty read buffers and get information
-   if (can_check_message_received(CAN_CHIP2))
-   {
-      // try to read message
-      if (can_get_message(CAN_CHIP2, &msg))
-      {
-         // fetch information from CAN2
-         fetchInfoFromCAN2(&msg);
-      } /* end of if message is read */
-   } /* end of if check message received on CAN2 */
+   handleCan2Reception(&msg);
 #endif
 #else
    if (send500ms)   // approx. 500ms 4MHz@1024 prescale factor
@@ -373,4 +315,106 @@ ISR(INT0_vect)
    led_toggle(errCan2LED);
    fsmState = WAKEUP;
 }
+
+/***************************************************************************/
+/* HELPER ROUTINES                                                         */
+/***************************************************************************/
+
+#ifndef ___SIMULATION___
+/**
+ * @brief handles CAN1 reception
+ * @param pointer to message struct
+ */
+void handleCan1Reception(can_t* msg)
+{
+   if (can_check_message_received(CAN_CHIP1))
+   {
+      // try to read message
+      if (can_get_message(CAN_CHIP1, msg))
+      {
+         // reset timer counter, since there is activity on master CAN bus
+         setTimer1Count(0);
+
+         // fetch information from CAN1
+         fetchInfoFromCAN1(msg);
+#ifdef ___SINGLE_CAN___
+         msg->msgId += 10;
+         can_send_message(CAN_CHIP1, msg);
+#endif
+         // signal activity
+         led_toggle(rxCan1LED);
+      }
+   }
+}
+
+/**
+ * @brief handles CAN2 reception
+ * @param pointer to message struct
+ */
+void handleCan2Reception(can_t* msg)
+{
+   // empty read buffers and get information
+   if (can_check_message_received(CAN_CHIP2))
+   {
+      // try to read message
+      if (can_get_message(CAN_CHIP2, msg))
+      {
+         // fetch information from CAN2
+         fetchInfoFromCAN2(msg);
+      }
+   }
+}
+
+/**
+ * @brief handle CAN1 transmission
+ * @param pointer to message struct
+ */
+void handleCan1transmission(can_t* msg)
+{
+}
+
+/**
+ * @brief handle CAN2 transmission
+ * @param pointer to message struct
+ */
+void handleCan2transmission(can_t* msg)
+{
+   if (send100ms)    // approx. 100ms 4MHz@1024 prescale factor
+   {
+      send100ms = false;
+
+      msg->msgId = CANID_2_IGNITION;
+      sendCan2Message(msg);
+
+      msg->msgId = CANID_2_WHEEL_DATA;  // should be 50ms, but keep it
+      sendCan2Message(msg);
+   }
+
+   if (send500ms)   // approx. 500ms 4MHz@1024 prescale factor
+   {
+      send500ms = false;
+
+      msg->msgId = CANID_2_REVERSE_GEAR;
+      sendCan2Message(msg);
+   }
+}
+
+/**
+ * @brief sends message to CAN2 and filling up converted data
+ *
+ * Note: Set message id before calling this function.
+ *
+ * @param pointer to CAN message
+ */
+void sendCan2Message(can_t* msg)
+{
+   fillInfoToCAN2(msg);
+
+   // send message
+   can_send_message(CAN_CHIP2, msg);
+
+   // signal activity
+   led_toggle(txCan2LED);
+}
+#endif
 

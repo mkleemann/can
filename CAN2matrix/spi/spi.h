@@ -23,6 +23,37 @@
 
 #include "spi_config.h"
 
+/***************************************************************************/
+/* CALCULATE BIT VALUES                                                    */
+/***************************************************************************/
+
+// now start calculating prescaler values. Start with SPI2X bit...
+#if (SPI_PRESCALER == 2) || (SPI_PRESCALER == 8) || (SPI_PRESCALER == 32) || (SPI_PRESCALER == 64)
+   #define R_SPSR             (1 << SPI2X)
+   #define SPI_PRESCALER_     (SPI_PRESCALER * 2)  // to make it easier in the next step
+#else
+   #define R_SPSR             0
+   #define SPI_PRESCALER_     SPI_PRESCALER
+#endif
+
+// ... and add SPR0/1.
+#if (SPI_PRESCALER_ == 4)
+   #define  R_SPCR            0
+#elif (SPI_PRESCALER_ == 16)
+   #define  R_SPCR            (1 << SPR0)
+#elif (SPI_PRESCALER_ == 64)
+   #define  R_SPCR            (1 << SPR1)
+#elif (SPI_PRESCALER_ == 128)
+   #define  R_SPCR            (1 << SPR1) | (1 << SPR0)
+#else
+   #error   SPI_PRESCALER must be one of the values of 2^n with n = 1..7!
+#endif
+
+
+/***************************************************************************/
+/* PROTOTYPES                                                              */
+/***************************************************************************/
+
 /* @brief activate SPI pins of AVR
  */
 void spi_pin_init(void);

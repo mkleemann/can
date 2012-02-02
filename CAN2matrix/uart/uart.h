@@ -23,6 +23,29 @@
 
 #include "uart_config.h"
 
+/***************************************************************************/
+/* DEFINITIONS                                                             */
+/***************************************************************************/
+
+#ifndef F_CPU     // setup a default CPU clock rate, if not set yet
+   #warning "F_CPU was not defined yet, and is now set here to some default value!"
+   #define F_CPU     4000000UL
+#endif // F_CPU
+
+// calculate UBRRH/UBRRL register values
+#define R_UBRR     ((F_CPU + UART_BAUDRATE * 8)/(16 * UART_BAUDRATE) - 1)
+#define BAUD_REAL  (F_CPU/(16*(R_UBRR + 1)))            // real baudrate
+#define BAUD_ERROR ((BAUD_REAL * 1000) / UART_BAUDRATE) // error in per mill, 1000 = no error
+
+#if ((BAUD_ERROR<990) || (BAUD_ERROR>1010))
+  #error Systematic error. Baudrate is more than 1%, which is too high!
+#endif
+
+
+/***************************************************************************/
+/* PROTOTYPES                                                              */
+/***************************************************************************/
+
 /* @brief initializes uart interface
  *
  */

@@ -29,12 +29,7 @@
 /**
  * @brief global array to access LEDs via port pins directly
  */
-static ledType ledPins[NUM_OF_LEDS] = { P_LED0,
-                                        P_LED1,
-                                        P_LED2,
-                                        P_LED3,
-                                        P_LED4
-                                      };
+static ledType ledPins[NUM_OF_LEDS] = { P_LEDS };
 
 
 /**************************************************************************/

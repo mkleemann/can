@@ -23,6 +23,20 @@
 
 #include "leds_config.h"
 
+/***************************************************************************/
+/* TYPEDEFS                                                                */
+/***************************************************************************/
+
+/* @brief type of led control struct
+ */
+typedef struct { pvuint8_t ddr;
+                 pvuint8_t port;
+                 uint8_t   pin;
+               } ledType;
+
+/***************************************************************************/
+/* PROTOTYPES                                                              */
+/***************************************************************************/
 
 /* @brief  initializes ports and bits connected to leds
  * @param  nothing

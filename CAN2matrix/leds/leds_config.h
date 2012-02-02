@@ -34,23 +34,16 @@ typedef enum
    NUM_OF_LEDS = 5         // always the last one
 } eLED;
 
-/* @brief type of led control struct
- */
-typedef struct { pvuint8_t ddr;
-                 pvuint8_t port;
-                 uint8_t   pin;
-               } ledType;
-
 /**
  * @brief defines for global array to access port pins directly via port address
  *
  * Note: The definitions here correspond to the LED names above.
  */
-#define P_LED0       {&DDR(C), &PORT(C), PINC1}
-#define P_LED1       {&DDR(C), &PORT(C), PINC2}
-#define P_LED2       {&DDR(C), &PORT(C), PINC3}
-#define P_LED3       {&DDR(C), &PORT(C), PINC4}
-#define P_LED4       {&DDR(C), &PORT(C), PINC5}
+#define P_LEDS    {&DDR(C), &PORT(C), PINC1}, \
+                  {&DDR(C), &PORT(C), PINC2}, \
+                  {&DDR(C), &PORT(C), PINC3}, \
+                  {&DDR(C), &PORT(C), PINC4}, \
+                  {&DDR(C), &PORT(C), PINC5}
 
 
 #endif /* LEDS_CONFIG_H_ */

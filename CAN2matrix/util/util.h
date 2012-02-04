@@ -31,6 +31,14 @@
 #define DDR(x)                   DDR ## x
 #define PORT(x)                  PORT ## x
 
+/**
+ * @brief expand if x is a macro definition
+ */
+#define EXP_PIN(x)               PIN(x)
+#define EXP_DDR(x)               DDR(x)
+#define EXP_PORT(x)              PORT(x)
+
+
 // NOTE: To ensure that you can enter one argument (e.g. via #define)
 //       which then brakes to two arguments (e.g. #define LED_PIN D,2)
 //       these macro definitions are done the way they are. Otherwise

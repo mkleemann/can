@@ -37,6 +37,24 @@
  */
 void bar_init(void);
 
+/**
+ * @brief set bargraph to defined maximum value
+ */
+void bar_set_max(void);
 
+/**
+ * @brief set bargraph to any value
+ */
+void bar_set(uint8_t value);
+
+/**
+ * @brief clear bargraph
+ */
+void bar_clear(void);
+
+/**
+ * @brief calculate pins to be set
+ */
+uint8_t bar_calc_pins(uint8_t value);
 
 #endif /* BAR_H_ */

@@ -21,11 +21,34 @@
 #ifndef BAR_CONFIG_H_
 #define BAR_CONFIG_H_
 
+/***************************************************************************/
+/* GENERAL CONFIGURATION                                                   */
+/***************************************************************************/
+
+/**
+ * @brief maximum value which causes all bargraph pins to be high
+ *
+ * 0..BAR_MAX_VALUE -> 0..P_BAR_RANGE-1
+ */
+#define BAR_MAX_VALUE   0xFF
+
+/**
+ * @brief negate bargraph (MAX -> 0; 0 -> P_BAR_RANGE-1)
+ *
+ * Sometimes it is wanted to set all pins when the value is 0, but clear
+ * them when th evalue is near maximum. This is used e.g. in park distance
+ * control units to visualize the measured values as a warning to the user.
+ */
+#define BAR_NEGATED
+
+/***************************************************************************/
+/* PORT/PIN DEFINITIONS                                                    */
+/***************************************************************************/
 
 /**
  * @brief define port to use for bargraph
  */
-#define P_BAR        C
+#define P_BAR           C
 
 /**
  * @brief define range of port used for bargraph
@@ -33,7 +56,7 @@
  * The bargraph uses the port pin range (pin 0..P_BAR_RANGE-1). Nothing else
  * should be connected to it than the hardware to use, e.g. LEDs.
  */
-#define P_BAR_RANGE  5
+#define P_BAR_RANGE     5
 
 /**
  * @brief definition of chip select
@@ -41,7 +64,7 @@
  * If you need a chip select, define it here too. If the definition is not
  * set here, the pin won't be used.
  */
-#define P_BAR_CS     D,5
+#define P_BAR_CS        D,5
 
 /**
  * @brief define if chip select pin is negated

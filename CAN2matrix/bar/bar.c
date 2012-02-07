@@ -58,11 +58,8 @@ void bar_init()
  */
 void bar_set_max(void)
 {
-#ifdef BAR_NEGATED
-   EXP_PORT(P_BAR) &= ~(bar_calc_pins(BAR_MAX_VALUE));
-#else
-   EXP_PORT(P_BAR) |=  bar_calc_pins(BAR_MAX_VALUE);
-#endif
+   uint8_t mask = ~0;
+   EXP_PORT(P_BAR) |= ~(mask << P_BAR_RANGE);
 }
 
 /**
@@ -72,12 +69,7 @@ void bar_set(uint8_t value)
 {
    // remove old values
    bar_clear();
-#ifdef BAR_NEGATED
-   EXP_PORT(P_BAR) &= ~(bar_calc_pins(value));
-#else
    EXP_PORT(P_BAR) |= bar_calc_pins(value);
-#endif
-
 }
 
 /**
@@ -85,11 +77,8 @@ void bar_set(uint8_t value)
  */
 void bar_clear(void)
 {
-#ifdef BAR_NEGATED
-   EXP_PORT(P_BAR) |=  bar_calc_pins(BAR_MAX_VALUE);
-#else
-   EXP_PORT(P_BAR) &= ~(bar_calc_pins(BAR_MAX_VALUE));
-#endif
+   uint8_t mask = ~0;
+   EXP_PORT(P_BAR) &= (mask << P_BAR_RANGE);
 }
 
 /**
@@ -98,16 +87,18 @@ void bar_clear(void)
 uint8_t bar_calc_pins(uint8_t value)
 {
    uint8_t retVal = 0;
-   // setup next value
-   if(value < BAR_MAX_VALUE)
+   uint8_t mask   = ~0;
+   uint8_t step = (P_BAR_RANGE * value / BAR_MAX_VALUE);
+   // setup next value, but keep values > MAX out
+   if(value <= BAR_MAX_VALUE)
    {
       // divide range with maximum and multiply value to steps you get
-      // add 1 to get max/half right
-      retVal = (0xFF >> (8 - P_BAR_RANGE * value / BAR_MAX_VALUE));
+#ifdef BAR_INVERTED
+      retVal |= (mask << step) & ~(mask << P_BAR_RANGE);
+#else
+      retVal |= ~(mask << step);
+#endif
    }
-   else
-   {
-      retVal = (0xFF >> (8 - P_BAR_RANGE));
-   }
+   return retVal;
 }
 

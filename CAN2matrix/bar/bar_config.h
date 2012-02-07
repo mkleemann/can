@@ -30,7 +30,7 @@
  *
  * 0..BAR_MAX_VALUE -> 0..P_BAR_RANGE-1
  */
-#define BAR_MAX_VALUE   0xFF
+#define BAR_MAX_VALUE   10
 
 /**
  * @brief negate bargraph (MAX -> 0; 0 -> P_BAR_RANGE-1)
@@ -39,7 +39,7 @@
  * them when th evalue is near maximum. This is used e.g. in park distance
  * control units to visualize the measured values as a warning to the user.
  */
-#define BAR_NEGATED
+//#define BAR_INVERTED
 
 /***************************************************************************/
 /* PORT/PIN DEFINITIONS                                                    */
@@ -56,7 +56,7 @@
  * The bargraph uses the port pin range (pin 0..P_BAR_RANGE-1). Nothing else
  * should be connected to it than the hardware to use, e.g. LEDs.
  */
-#define P_BAR_RANGE     5
+#define P_BAR_RANGE     6
 
 /**
  * @brief definition of chip select

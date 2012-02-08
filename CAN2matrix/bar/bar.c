@@ -31,7 +31,7 @@
 void bar_init()
 {
    // initialize bargraph port pins to output, low
-   for(int i = 0; i < P_BAR_RANGE; ++i)
+   for(int i = P_BAR_OFFSET; i < P_BAR_RANGE+P_BAR_OFFSET; ++i)
    {
       EXP_PORT(P_BAR) &= ~(1 << i);
       EXP_DDR(P_BAR)  |=  (1 << i);
@@ -104,6 +104,10 @@ uint8_t bar_calc_pins(uint8_t value)
       retVal |= ~(mask << step);
 #endif
    }
+
+   // add defined offset
+   retVal <<= P_BAR_OFFSET;
+
    return retVal;
 }
 

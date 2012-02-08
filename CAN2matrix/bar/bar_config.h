@@ -67,6 +67,14 @@
 #define P_BAR_RANGE     6
 
 /**
+ * @brief adds an offset to the port pins used (not starting at pin0)
+ *
+ * Note: Adds to P_BAR_RANGE, so P_BAR_OFFSET + P_BAR_RANGE must not
+ *       exceed port range. Set to 0, if unused.
+ */
+#define P_BAR_OFFSET    0
+
+/**
  * @brief definition of chip select
  *
  * If you need a chip select, define it here too. If the definition is not

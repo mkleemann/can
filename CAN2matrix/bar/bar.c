@@ -89,7 +89,11 @@ uint8_t bar_calc_pins(uint8_t value)
    uint8_t retVal = 0;
    uint8_t mask   = ~0;
    // divide range with maximum and multiply value to get bargraph steps
+#ifdef BAR_REVERSE
+   uint8_t step = (P_BAR_RANGE * (BAR_MAX_VALUE - value + 1) / BAR_MAX_VALUE);
+#else
    uint8_t step = (P_BAR_RANGE * value / BAR_MAX_VALUE);
+#endif
    // setup next value, but keep values > MAX out
    if(value <= BAR_MAX_VALUE)
    {

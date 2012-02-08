@@ -33,11 +33,19 @@
 #define BAR_MAX_VALUE   10
 
 /**
- * @brief negate bargraph (MAX -> 0; 0 -> P_BAR_RANGE-1)
+ * @brief reverse bargraph (MAX -> 0; 0 -> P_BAR_RANGE-1)
  *
  * Sometimes it is wanted to set all pins when the value is 0, but clear
- * them when th evalue is near maximum. This is used e.g. in park distance
+ * them when the value is near maximum. This is used e.g. in park distance
  * control units to visualize the measured values as a warning to the user.
+ */
+#define BAR_REVERSE
+
+/**
+ * @brief invert bits, e.g. to show value left
+ *
+ * This means, the bargraph reacts like normal, but the 1s and 0s are
+ * inverted.
  */
 //#define BAR_INVERTED
 

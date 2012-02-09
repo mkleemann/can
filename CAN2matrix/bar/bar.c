@@ -38,19 +38,7 @@ void bar_init()
    }
 
    // initialize chip select, if defined
-#ifdef P_BAR_CS
-
-   // set initial value of chip select port pin
-#ifdef P_BAR_CS_NEGATED
-   SET_PIN(P_BAR_CS);
-#else
-   RESET_PIN(P_BAR_CS);
-#endif
-
-   // setup pin
-   PIN_SET_OUTPUT(P_BAR_CS);
-
-#endif
+   bar_init_cs();
 }
 
 /**
@@ -59,7 +47,9 @@ void bar_init()
 void bar_set_max(void)
 {
    uint8_t mask = ~0;
+   bar_set_cs();
    EXP_PORT(P_BAR) |= ~(mask << P_BAR_RANGE);
+   bar_reset_cs();
 }
 
 /**
@@ -69,7 +59,9 @@ void bar_set(uint8_t value)
 {
    // remove old values
    bar_clear();
+   bar_set_cs();
    EXP_PORT(P_BAR) |= bar_calc_pins(value);
+   bar_reset_cs();
 }
 
 /**
@@ -78,7 +70,9 @@ void bar_set(uint8_t value)
 void bar_clear(void)
 {
    uint8_t mask = ~0;
+   bar_set_cs();
    EXP_PORT(P_BAR) &= (mask << P_BAR_RANGE);
+   bar_reset_cs();
 }
 
 /**
@@ -109,5 +103,55 @@ uint8_t bar_calc_pins(uint8_t value)
    retVal <<= P_BAR_OFFSET;
 
    return retVal;
+}
+
+
+/**
+ * @brief init chip select, if available
+ */
+void bar_init_cs(void)
+{
+#ifdef P_BAR_CS
+   // set initial value of chip select port pin
+#ifdef P_BAR_CS_INVERTED
+   SET_PIN(P_BAR_CS);
+#else
+   RESET_PIN(P_BAR_CS);
+#endif
+   // setup pin bahaviour
+   PIN_SET_OUTPUT(P_BAR_CS);
+#endif
+}
+
+/**
+ * @brief set chip select, if available
+ *
+ * This is done either set to HIGH level or LOW level, if inverted.
+ */
+void bar_set_cs(void)
+{
+#ifdef P_BAR_CS
+#ifdef P_BAR_CS_INVERTED
+   RESET_PIN(P_BAR_CS);
+#else
+   SET_PIN(P_BAR_CS);
+#endif
+#endif
+}
+
+/**
+ * @brief reset chip select, if available
+ *
+ * This is done either set to LOW level or HIGH level, if inverted.
+ */
+void bar_reset_cs(void)
+{
+#ifdef P_BAR_CS
+#ifdef P_BAR_CS_INVERTED
+   SET_PIN(P_BAR_CS);
+#else
+   RESET_PIN(P_BAR_CS);
+#endif
+#endif
 }
 

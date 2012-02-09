@@ -30,7 +30,7 @@
  *
  * 0..BAR_MAX_VALUE -> 0..P_BAR_RANGE-1
  */
-#define BAR_MAX_VALUE   10
+#define BAR_MAX_VALUE   254
 
 /**
  * @brief reverse bargraph (MAX -> 0; 0 -> P_BAR_RANGE-1)
@@ -64,7 +64,7 @@
  * The bargraph uses the port pin range (pin 0..P_BAR_RANGE-1). Nothing else
  * should be connected to it than the hardware to use, e.g. LEDs.
  */
-#define P_BAR_RANGE     6
+#define P_BAR_RANGE     5
 
 /**
  * @brief adds an offset to the port pins used (not starting at pin0)
@@ -72,7 +72,7 @@
  * Note: Adds to P_BAR_RANGE, so P_BAR_OFFSET + P_BAR_RANGE must not
  *       exceed port range. Set to 0, if unused.
  */
-#define P_BAR_OFFSET    0
+#define P_BAR_OFFSET    1
 
 /**
  * @brief definition of chip select
@@ -80,15 +80,15 @@
  * If you need a chip select, define it here too. If the definition is not
  * set here, the pin won't be used.
  */
-#define P_BAR_CS        D,5
+//#define P_BAR_CS        D,5
 
 /**
- * @brief define if chip select pin is negated
+ * @brief define if chip select pin is inverted
  *
  * To comment this define use a HIGH level for a CS. Set this define and the
  * /CS is set LOW active.
  */
-#define P_BAR_CS_NEGATED
+//#define P_BAR_CS_INVERTED
 
 
 #endif /* BAR_CONFIG_H_ */

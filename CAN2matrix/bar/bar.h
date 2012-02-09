@@ -57,4 +57,23 @@ void bar_clear(void);
  */
 uint8_t bar_calc_pins(uint8_t value);
 
+/**
+ * @brief init chip select, if available
+ */
+void bar_init_cs(void);
+
+/**
+ * @brief set chip select, if available
+ *
+ * This is done either set to HIGH level or LOW level, if inverted.
+ */
+void bar_set_cs(void);
+
+/**
+ * @brief reset chip select, if available
+ *
+ * This is done either set to LOW level or HIGH level, if inverted.
+ */
+void bar_reset_cs(void);
+
 #endif /* BAR_H_ */

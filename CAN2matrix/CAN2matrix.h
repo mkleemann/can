@@ -44,7 +44,7 @@ typedef enum
 //#define ___SIMULATION___
 
 // use only CAN1 - read messages and put them back on bus with msgId += 10
-#define ___SINGLE_CAN___
+//#define ___SINGLE_CAN___
 
 /***************************************************************************/
 /* INT0 trigger definition                                                 */

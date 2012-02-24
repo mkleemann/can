@@ -51,6 +51,7 @@ SUBDIRS :=  \
 
 # Add inputs and outputs from these tool invocations to the build variables
 C_SRCS +=  \
+./adc/adc.h \
 ./bar/bar.c \
 ./CAN2matrix.c \
 ./can/can_filter_mcp2515.c \
@@ -72,6 +73,7 @@ ASM_SRCS +=
 
 
 OBJS +=  \
+adc/adc.o \
 bar/bar.o \
 CAN2matrix.o \
 can/can_filter_mcp2515.o \
@@ -87,6 +89,7 @@ uart/uart.o
 
 
 OBJS_AS_ARGS +=  \
+adc/adc.o \
 bar/bar.o \
 CAN2matrix.o \
 can/can_filter_mcp2515.o \
@@ -102,6 +105,7 @@ uart/uart.o
 
 
 C_DEPS +=  \
+adc/adc.d \
 bar/bar.d \
 CAN2matrix.d \
 can/can_filter_mcp2515.d \
@@ -117,6 +121,7 @@ uart/uart.d
 
 
 C_DEPS_AS_ARGS +=  \
+adc/adc.d \
 bar/bar.d \
 CAN2matrix.d \
 can/can_filter_mcp2515.d \

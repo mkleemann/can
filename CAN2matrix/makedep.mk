@@ -2,6 +2,8 @@
 # Automatically-generated file. Do not edit or delete the file
 ################################################################################
 
+adc\adc.c
+
 bar\bar.c
 
 CAN2matrix.c

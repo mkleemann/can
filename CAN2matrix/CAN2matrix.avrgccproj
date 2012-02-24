@@ -100,6 +100,15 @@
     <GenerateEepFile>True</GenerateEepFile>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="adc\adc.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="adc\adc.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="adc\adc_config.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="bar\bar.c">
       <SubType>compile</SubType>
     </Compile>
@@ -189,6 +198,7 @@
     <Folder Include="can" />
     <Folder Include="leds" />
     <Folder Include="bar" />
+    <Folder Include="adc" />
     <Folder Include="util" />
     <Folder Include="timer" />
     <Folder Include="uart" />

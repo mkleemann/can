@@ -11,3 +11,4 @@ CAN2matrix.avrsuo
 /**/*.o
 /**/**/*.o
 /**/*.sym
+/**/*.cmd

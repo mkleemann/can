@@ -25,6 +25,8 @@
  */
 void adc_init(void)
 {
+   ADMUX  = ADC_REF_SELECT | ADC_INPUT_CHANNEL;
+   ADCSRA = ADC_PRESCALER;
 }
 
 /**
@@ -32,6 +34,26 @@ void adc_init(void)
  */
 uint16_t adc_get(void)
 {
-   return 0;
+
+
+   uint16_t retVal = ADCL;
+   retVal |= ADCH;
+   return retVal;
+}
+
+/**
+ * @brief enables ADC for power save
+ */
+void adc_enable()
+{
+   ADCSRA |= (1 << ADEN);
+}
+
+/**
+ * @brief disables ADC for power save
+ */
+void adc_disable()
+{
+   ADCSRA &= ~(1 << ADEN);
 }
 

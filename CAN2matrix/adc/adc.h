@@ -33,6 +33,15 @@ void adc_init(void);
  */
 uint16_t adc_get(void);
 
+/**
+ * @brief enables ADC for power save
+ */
+void adc_enable(void);
+
+/**
+ * @brief disables ADC for power save
+ */
+void adc_disable(void);
 
 
 

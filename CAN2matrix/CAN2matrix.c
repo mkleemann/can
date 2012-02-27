@@ -29,6 +29,7 @@
 #include "can/can_mcp2515.h"
 #include "timer/timer.h"
 #include "leds/leds.h"
+#include "adc/adc.h"
 #include "CAN2matrix.h"
 #include "matrix.h"
 
@@ -109,6 +110,9 @@ void sleepDetected()
    stopTimer1();
    stopTimer2();
 
+   // stop adc to save power
+   adc_disable();
+
    // (re)set global flags
    send_it  = 0;
 
@@ -176,6 +180,8 @@ void wakeUp()
 
    restartTimer1();
    restartTimer2();
+
+   adc_enable();
 
    sei();
 
@@ -250,6 +256,10 @@ void initHardware()
    // initialize the hardware SPI with default values set in spi/spi_config.h
    spi_pin_init();
    spi_master_init();
+
+   // initialize adc and enable
+   adc_init();
+   adc_enable();
 
    // set wakeup interrupt trigger on low level
    MCUCR |= EXTERNAL_INT0_TRIGGER;
@@ -393,6 +403,14 @@ void handleCan2transmission(can_t* msg)
    if (send500ms)   // approx. 500ms 4MHz@1024 prescale factor
    {
       send500ms = false;
+
+      // testing for now - message is not built up correctly
+      uint16_t dimVal = adc_get();
+      msg->msgId = CANID_2_DIMMING;
+      msg->header.len = 2;
+      msg->data[0] = (dimVal >> 8);
+      msg->data[1] = (dimVal & 0xFF);
+      sendCan2Message(msg);
 
       msg->msgId = CANID_2_REVERSE_GEAR;
       sendCan2Message(msg);

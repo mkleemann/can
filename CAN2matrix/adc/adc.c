@@ -34,10 +34,20 @@ void adc_init(void)
  */
 uint16_t adc_get(void)
 {
+   // start conversion
+   ADCSRA |= (1 << ADSC);
 
+   // wait for new conversion to be ready
+   while (!(ADCSRA & (1 << ADIF)))
+      ;
 
+   // get value
    uint16_t retVal = ADCL;
-   retVal |= ADCH;
+   retVal |= (uint16_t) (ADCH << 8);
+
+   // clear interrupt flag by writing 1
+   ADCSRA |= (1 << ADIF);
+
    return retVal;
 }
 

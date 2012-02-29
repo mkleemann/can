@@ -393,46 +393,27 @@ void handleCan2transmission(can_t* msg)
    {
       send100ms = false;
 
-      msg->msgId = CANID_2_IGNITION;
-      sendCan2Message(msg);
+      sendCan2_100ms(msg);
 
-      msg->msgId = CANID_2_WHEEL_DATA;  // should be 50ms, but keep it
-      sendCan2Message(msg);
+      // signal activity
+      led_toggle(txCan2LED);
    }
 
    if (send500ms)   // approx. 500ms 4MHz@1024 prescale factor
    {
       send500ms = false;
 
-      // testing for now - message is not built up correctly
-      uint16_t dimVal = adc_get();
-      msg->msgId = CANID_2_DIMMING;
-      msg->header.len = 2;
-      msg->data[0] = (dimVal >> 8);
-      msg->data[1] = (dimVal & 0xFF);
-      sendCan2Message(msg);
+      // check and set dim value
+      uint16_t dimValue = adc_get();
+      setDimValue(dimValue >> 2); // TODO: optimize with ADLAR bit
 
-      msg->msgId = CANID_2_REVERSE_GEAR;
-      sendCan2Message(msg);
+      sendCan2_500ms(msg);
+
+      // signal activity
+      led_toggle(txCan2LED);
    }
 }
 
-/**
- * @brief sends message to CAN2 and filling up converted data
- *
- * Note: Set message id before calling this function.
- *
- * @param pointer to CAN message
- */
-void sendCan2Message(can_t* msg)
-{
-   fillInfoToCAN2(msg);
 
-   // send message
-   can_send_message(CAN_CHIP2, msg);
-
-   // signal activity
-   led_toggle(txCan2LED);
-}
 #endif
 

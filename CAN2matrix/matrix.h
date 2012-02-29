@@ -230,4 +230,60 @@ void transferWheelCount(can_t* msg);
  */
 void transferGearStatus(can_t* msg);
 
+/***************************************************************************/
+/* Helpers to be called by main routine                                    */
+/***************************************************************************/
+
+/**
+ * @brief send CAN1 message every 100ms
+ * @param pointer to message struct
+ */
+void sendCan1_100ms(can_t* msg);
+
+/**
+ * @brief send CAN1 message every 500ms
+ * @param pointer to message struct
+ */
+void sendCan1_500ms(can_t* msg);
+
+/**
+ * @brief send CAN1 message every 1000ms
+ * @param pointer to message struct
+ */
+void sendCan1_1000ms(can_t* msg);
+
+/**
+ * @brief send CAN2 message every 100ms
+ * @param pointer to message struct
+ */
+void sendCan2_100ms(can_t* msg);
+
+/**
+ * @brief send CAN2 message every 500ms
+ * @param pointer to message struct
+ */
+void sendCan2_500ms(can_t* msg);
+
+/**
+ * @brief send CAN2 message every 1000ms
+ * @param pointer to message struct
+ */
+void sendCan2_1000ms(can_t* msg);
+
+/**
+ * @brief sends message to CAN2 and filling up converted data
+ *
+ * Note: Set message id before calling this function.
+ *
+ * @param pointer to CAN message with set msg id
+ */
+void sendCan2Message(can_t* msg);
+
+/**
+ * @brief gets a dim value to be sent via CAN
+ * @param dim value 0..255
+ */
+void setDimValue(uint8_t value);
+
 #endif /* MATRIX_H_ */
+

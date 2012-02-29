@@ -103,7 +103,7 @@ void fillInfoToCAN2(can_t* msg)
    for(int i = 0; i < 8; ++i)
    {
       msg->data[i] = 0;
-   } /* end of for 0..7 */
+   }
 
    switch(msg->msgId)
    {
@@ -116,7 +116,7 @@ void fillInfoToCAN2(can_t* msg)
          // 0: start not active; 1: normal start
          msg->data[1] = (storage.ignition & 0x80) ? 1 : 0;
          break;
-      } /* end of case CANID_2_IGNITION */
+      }
       case CANID_2_WHEEL_DATA:
       {
          // message is 8 bytes long
@@ -130,7 +130,7 @@ void fillInfoToCAN2(can_t* msg)
          msg->data[6] = storage.wheel2U;
          msg->data[7] = storage.wheel2L;
          break;
-      } /* end of case CANID_2_WHEEL_DATA */
+      }
       case CANID_2_REVERSE_GEAR:
       {
          // message is 7 bytes long
@@ -138,12 +138,22 @@ void fillInfoToCAN2(can_t* msg)
          // gear box status
          msg->data[2] = storage.gearBox;
          break;
-      } /* end of case CANID_2_REVERSE_GEAR */
+      }
+      case CANID_2_DIMMING:
+      {
+         // message is 3 bytes long
+         msg->header.len = 3;
+         // byte 1 bit 0 - day/night switch
+         msg->data[0] = (storage.dimLevel > 0x7F) ? 0 : 1;
+         msg->data[1] = storage.dimLevel; // radio
+         msg->data[2] = storage.dimLevel; // interior
+         break;
+      }
       default:
       {
          // do nothing!
          break;
-      } /* end of default */
+      }
    } /* end of switch msgId */
 }
 
@@ -240,6 +250,92 @@ void transferGearStatus(can_t* msg)
 
    // store information
    storage.gearBox = status;
+}
+
+/***************************************************************************/
+/* Helpers to be called by main routine                                    */
+/***************************************************************************/
+
+/**
+ * @brief send CAN1 message every 100ms
+ * @param pointer to message struct
+ */
+void sendCan1_100ms(can_t* msg)
+{
+}
+
+/**
+ * @brief send CAN1 message every 500ms
+ * @param pointer to message struct
+ */
+void sendCan1_500ms(can_t* msg)
+{
+}
+
+/**
+ * @brief send CAN1 message every 1000ms
+ * @param pointer to message struct
+ */
+void sendCan1_1000ms(can_t* msg)
+{
+}
+
+/**
+ * @brief send CAN2 message every 100ms
+ * @param pointer to message struct
+ */
+void sendCan2_100ms(can_t* msg)
+{
+   msg->msgId = CANID_2_IGNITION;
+   sendCan2Message(msg);
+
+   msg->msgId = CANID_2_WHEEL_DATA;  // should be 50ms, but keep it
+   sendCan2Message(msg);
+}
+
+/**
+ * @brief send CAN2 message every 500ms
+ * @param pointer to message struct
+ */
+void sendCan2_500ms(can_t* msg)
+{
+   // testing for now - message is not built up correctly
+   msg->msgId = CANID_2_DIMMING;
+   sendCan2Message(msg);
+
+   msg->msgId = CANID_2_REVERSE_GEAR;
+   sendCan2Message(msg);
+}
+
+/**
+ * @brief send CAN2 message every 1000ms
+ * @param pointer to message struct
+ */
+void sendCan2_1000ms(can_t* msg)
+{
+}
+
+/**
+ * @brief sends message to CAN2 and filling up converted data
+ *
+ * Note: Set message id before calling this function.
+ *
+ * @param pointer to CAN message with set msg id
+ */
+void sendCan2Message(can_t* msg)
+{
+   fillInfoToCAN2(msg);
+
+   can_send_message(CAN_CHIP2, msg);
+}
+
+/**
+ * @brief gets a dim value to be sent via CAN
+ * @param dim value 0..255
+ */
+void setDimValue(uint8_t value)
+{
+   storage.dimLevel = value;
 }
 
 

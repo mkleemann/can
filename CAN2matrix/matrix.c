@@ -144,7 +144,7 @@ void fillInfoToCAN2(can_t* msg)
          // message is 3 bytes long
          msg->header.len = 3;
          // byte 1 bit 0 - day/night switch
-         msg->data[0] = (storage.dimLevel > 0x7F) ? 0 : 1;
+         msg->data[0] = (storage.dimLevel > CAN2_DIM_LEVEL_THRESHOLD) ? DIM_2_DAY_MODE : DIM_2_NIGHT_MODE;
          msg->data[1] = storage.dimLevel; // radio
          msg->data[2] = storage.dimLevel; // interior
          break;

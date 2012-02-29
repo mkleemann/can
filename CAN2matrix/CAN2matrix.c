@@ -405,7 +405,7 @@ void handleCan2transmission(can_t* msg)
 
       // check and set dim value
       uint16_t dimValue = adc_get();
-      setDimValue(dimValue >> 2); // TODO: optimize with ADLAR bit
+      setDimValue((uint8_t) dimValue);  // ADC config set to 8bit resolution
 
       sendCan2_500ms(msg);
 

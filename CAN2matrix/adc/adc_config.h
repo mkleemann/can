@@ -71,4 +71,9 @@
  */
 #define ADC_PRESCALER         (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0)
 
+/**
+ * @brief use only upper 8bit of ADC value
+ */
+#define ADC_8BIT_RESOLUTION
+
 #endif /* ADC_CONFIG_H_ */

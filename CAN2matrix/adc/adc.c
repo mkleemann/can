@@ -27,6 +27,9 @@ void adc_init(void)
 {
    ADMUX  = ADC_REF_SELECT | ADC_INPUT_CHANNEL;
    ADCSRA = ADC_PRESCALER;
+#ifdef ADC_8BIT_RESOLUTION
+   ADMUX |= (1 < ADLAR);
+#endif
 }
 
 /**
@@ -43,7 +46,11 @@ uint16_t adc_get(void)
 
    // get value
    uint16_t retVal = ADCL;
+#ifdef ADC_8BIT_RESOLUTION
+   retVal  = ADCH;
+#else
    retVal |= (uint16_t) (ADCH << 8);
+#endif
 
    // clear interrupt flag by writing 1
    ADCSRA |= (1 << ADIF);

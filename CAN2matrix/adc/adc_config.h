@@ -55,6 +55,7 @@
  *    1111 0V (GND)
  */
 #define ADC_INPUT_CHANNEL     0
+#define ADC_INPUT_PIN         C,ADC_INPUT_CHANNEL
 
 /**
  * @brief prescaler value between Fosc and CLKadc

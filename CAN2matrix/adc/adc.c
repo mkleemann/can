@@ -30,7 +30,7 @@ void adc_init(void)
    ADMUX  = ADC_REF_SELECT | ADC_INPUT_CHANNEL;
    ADCSRA = ADC_PRESCALER;
 #ifdef ADC_8BIT_RESOLUTION
-   ADMUX |= (1 < ADLAR);
+   ADMUX |= (1 << ADLAR);
 #endif
 }
 

@@ -233,8 +233,8 @@ void errorState()
       {
          send500ms = false;
          led_toggle(sleepLed);
-      } /* end of if 500ms tick */
-   } /* end of while(1) - error handling */
+      }
+   }
 }
 
 /**
@@ -281,14 +281,15 @@ bool initCAN()
       // signal error on initialization
       led_on(errCan1LED);
       retVal = false;
-   } /* end of init CAN1 failed */
+   }
 #ifndef ___SINGLE_CAN___
+   // init can interface 2
    else if (false == can_init_mcp2515(CAN_CHIP2, CAN_BITRATE_125_KBPS))
    {
       // signal error on initialization
       led_on(errCan2LED);
       retVal = false;
-   } /* end of else init failed CAN2 */
+   }
 #endif
 #endif
 

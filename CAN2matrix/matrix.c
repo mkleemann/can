@@ -58,23 +58,26 @@ void fetchInfoFromCAN1(can_t* msg)
       {
          transferIgnStatus(msg);
          break;
-      } /* end of case CANID_1_IGNITION */
+      }
+
       case CANID_1_WHEEL_DATA:
       {
          transferWheelCount(msg);
          break;
-      } /* end of case CANID_1_WHEEL_DATA */
+      }
+
       case CANID_1_REVERSE_GEAR:
       {
          transferGearStatus(msg);
          break;
-      } /* end of case CANID_1_REVERSE_GEAR */
+      }
+
       default:
       {
          // do nothing!
          break;
-      } /* end of default */
-   } /* end of switch msgId */
+      }
+   }
 }
 
 /**
@@ -117,6 +120,7 @@ void fillInfoToCAN2(can_t* msg)
          msg->data[1] = (storage.ignition & 0x80) ? 1 : 0;
          break;
       }
+
       case CANID_2_WHEEL_DATA:
       {
          // message is 8 bytes long
@@ -131,6 +135,7 @@ void fillInfoToCAN2(can_t* msg)
          msg->data[7] = storage.wheel2L;
          break;
       }
+
       case CANID_2_REVERSE_GEAR:
       {
          // message is 7 bytes long
@@ -139,6 +144,7 @@ void fillInfoToCAN2(can_t* msg)
          msg->data[2] = storage.gearBox;
          break;
       }
+
       case CANID_2_DIMMING:
       {
          // message is 3 bytes long
@@ -149,12 +155,13 @@ void fillInfoToCAN2(can_t* msg)
          msg->data[2] = storage.dimLevel; // interior
          break;
       }
+
       default:
       {
          // do nothing!
          break;
       }
-   } /* end of switch msgId */
+   }
 }
 
 
@@ -183,19 +190,19 @@ void transferIgnStatus(can_t* msg)
    if(byte1 & IGN_1_ACC_Status)
    {
       status |= IGN_2_ACC_On_IGN_Off;     // bits 5-7 - IGN off and ACC on
-   } /* end of if ACC */
+   }
 
    // check IGN start status
    if(byte1 & IGN_1_START_Status)
    {
       status |= IGN_2_IGN_Start;          // bits 5-7 - IGN start
-   } /* end of if IGN start */
+   }
 
    // check IGN on status
    if(byte1 & IGN_1_ON)
    {
       status |= IGN_2_ON;                 // bit 5-7 - IGN on
-   } /* end of if IGN on */
+   }
 
    // store information
    storage.ignition = status;
@@ -235,18 +242,18 @@ void transferGearStatus(can_t* msg)
 
    // get information (automatic PRND)
    if(7 == byte8)
-   {
+   {  // reverse gear
       status |= 0x01;
-   } /* end of if R */
+   }
    else if(6 == byte8)
-   {
+   {  // neutral
       status |= 0x02;
-   } /* end of else if N */
+   }
    else if(8 != byte8)
-   {
+   {  // drive/sport/tip/... (not parking)
       status |= 0x04;
-   } /* end of else if D/S/tip (not P) */
-   // else status = 0
+   }
+   // else status = 0 -> parking or manual gear box
 
    // store information
    storage.gearBox = status;

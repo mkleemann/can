@@ -172,6 +172,10 @@
 
 // dimming for CAN2
 #define DIM_2_DAY_NIGHT                0
+// use bit definitions for setup in message
+#define DIM_2_DAY_MODE                 0
+#define DIM_2_NIGHT_MODE       (1 << DIM_2_DAY_NIGHT)
+
 
 /***************************************************************************/
 /* DEFINITIONS                                                             */
@@ -180,9 +184,6 @@
 // when to switch from day to night mode and vice versa
 #define CAN2_DIM_LEVEL_THRESHOLD       0x7F
 
-// use bit definitions
-#define DIM_2_DAY_MODE                 0
-#define DIM_2_NIGHT_MODE       (1 << DIM_2_DAY_NIGHT)
 
 /***************************************************************************/
 /* functions for matrix operations                                         */

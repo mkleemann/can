@@ -24,7 +24,7 @@
 /* @brief SPI_PRESCALER must have a value which is 2^n (n = 1..7)
  */
 #ifndef SPI_PRESCALER
-   #define SPI_PRESCALER      128
+   #define SPI_PRESCALER      8
 #endif
 
 

@@ -182,7 +182,10 @@
 /***************************************************************************/
 
 // when to switch from day to night mode and vice versa
-#define CAN2_DIM_LEVEL_THRESHOLD       0x7F
+#define CAN2_DIM_LEVEL_THRESHOLD       0x45
+
+// when to take over dimming measures - max ~250 (16bit range)
+#define DIMMING_MEASURE_CYCLE          200
 
 
 /***************************************************************************/
@@ -266,6 +269,15 @@ void sendCan1_500ms(can_t* msg);
  * @param pointer to message struct
  */
 void sendCan1_1000ms(can_t* msg);
+
+/**
+ * @brief sends message to CAN1 and filling up converted data
+ *
+ * Note: Set message id before calling this function.
+ *
+ * @param pointer to CAN message with set msg id
+ */
+void sendCan1Message(can_t* msg);
 
 /**
  * @brief send CAN2 message every 100ms

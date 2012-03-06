@@ -20,6 +20,9 @@
 #include <avr/io.h>
 #include "matrix.h"
 
+// Not taken over from CAN2matrix.h!
+//#define ___SINGLE_CAN___
+
 /***************************************************************************/
 /* Definition of global variables to store CAN values.                     */
 /***************************************************************************/
@@ -40,6 +43,8 @@ typedef struct
 } storeVals_t;
 
 volatile storeVals_t storage;
+volatile uint16_t    dimSum      = 0x7F;  // start with average
+volatile uint8_t     dimMeasures = 0;     // number of measurements
 
 
 /***************************************************************************/
@@ -94,6 +99,35 @@ void fetchInfoFromCAN2(can_t* msg)
  */
 void fillInfoToCAN1(can_t* msg)
 {
+   // remove any old values
+   for(int i = 0; i < 8; ++i)
+   {
+      msg->data[i] = 0;
+   }
+
+#ifdef ___SINGLE_CAN___
+   // testing with id from CAN2
+   switch(msg->msgId)
+   {
+      case CANID_2_DIMMING:
+      {
+         // message is 3 bytes long
+         msg->header.len = 3;
+         // byte 1 bit 0 - day/night switch
+         msg->data[0] = (storage.dimLevel > CAN2_DIM_LEVEL_THRESHOLD) ? DIM_2_DAY_MODE : DIM_2_NIGHT_MODE;
+         msg->data[1] = storage.dimLevel; // radio
+         msg->data[2] = storage.dimLevel; // interior
+         break;
+      }
+
+      default:
+      {
+         // do nothing!
+         break;
+      }
+   }
+
+#endif
 }
 
 /**
@@ -277,6 +311,10 @@ void sendCan1_100ms(can_t* msg)
  */
 void sendCan1_500ms(can_t* msg)
 {
+#ifdef ___SINGLE_CAN___
+   msg->msgId = CANID_2_DIMMING;
+   sendCan1Message(msg);
+#endif
 }
 
 /**
@@ -286,6 +324,24 @@ void sendCan1_500ms(can_t* msg)
 void sendCan1_1000ms(can_t* msg)
 {
 }
+
+/**
+ * @brief sends message to CAN1 and filling up converted data
+ *
+ * Note: Set message id before calling this function.
+ *
+ * @param pointer to CAN message with set msg id
+ */
+void sendCan1Message(can_t* msg)
+{
+#ifdef ___SINGLE_CAN___
+   msg->msgId = CANID_2_DIMMING;
+   fillInfoToCAN1(msg);
+
+   can_send_message(CAN_CHIP1, msg);
+#endif
+}
+
 
 /**
  * @brief send CAN2 message every 100ms
@@ -306,7 +362,6 @@ void sendCan2_100ms(can_t* msg)
  */
 void sendCan2_500ms(can_t* msg)
 {
-   // testing for now - message is not built up correctly
    msg->msgId = CANID_2_DIMMING;
    sendCan2Message(msg);
 
@@ -342,7 +397,17 @@ void sendCan2Message(can_t* msg)
  */
 void setDimValue(uint8_t value)
 {
-   storage.dimLevel = value;
+   // get values for average
+   dimSum += value;
+   ++dimMeasures;
+
+   // measurement cycle done
+   if(dimMeasures >= DIMMING_MEASURE_CYCLE)
+   {
+      storage.dimLevel = dimSum / dimMeasures;
+      dimSum           = storage.dimLevel;
+      dimMeasures      = 0;
+   }
 }
 
 

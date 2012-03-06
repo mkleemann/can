@@ -52,7 +52,7 @@ Next Steps/Ideas:
 - (D) Wake Up by CAN activity for AVR itself
 - (P) Implement "The CAN Matrix" in code
 - (S) Additional functionality, like PDC distance showed by LEDs
-- (T) dim unit using a light dependent resistor
+- (D) dim unit using a light dependent resistor
 - (O) EEPROM use for message matrix
 - (O) make use of other AVRs to include CAN2analog or Analog2CAN possibility
 - (O) turn lights using fog lights with fade out

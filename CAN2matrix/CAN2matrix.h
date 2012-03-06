@@ -146,13 +146,13 @@ void handleCan2Reception(can_t* msg);
  * @brief handle CAN1 transmission
  * @param pointer to message struct
  */
-void handleCan1transmission(can_t* msg);
+void handleCan1Transmission(can_t* msg);
 
 /**
  * @brief handle CAN2 transmission
  * @param pointer to message struct
  */
-void handleCan2transmission(can_t* msg);
+void handleCan2Transmission(can_t* msg);
 
 /**
  * @brief sends message to CAN2 and filling up converted data

@@ -204,12 +204,21 @@ void run()
    /**** PUT MESSAGES TO CAN2 *************************************/
 
 #ifndef ___SINGLE_CAN___
-   handleCan2transmission(&msg);
+   handleCan2Transmission(&msg);
 
    /**** GET MESSAGES FROM CAN2 ***********************************/
 
    handleCan2Reception(&msg);
 #endif
+
+   /**** PUT MESSAGES TO CAN1 *************************************/
+
+   handleCan1Transmission(&msg);
+
+   // check and set dim value
+   uint16_t dimValue = adc_get();
+   setDimValue((uint8_t) dimValue);  // ADC config set to 8bit resolution
+
 #else
    if (send500ms)   // approx. 500ms 4MHz@1024 prescale factor
    {
@@ -348,10 +357,7 @@ void handleCan1Reception(can_t* msg)
 
          // fetch information from CAN1
          fetchInfoFromCAN1(msg);
-#ifdef ___SINGLE_CAN___
-         msg->msgId += 10;
-         can_send_message(CAN_CHIP1, msg);
-#endif
+
          // signal activity
          led_toggle(rxCan1LED);
       }
@@ -380,15 +386,23 @@ void handleCan2Reception(can_t* msg)
  * @brief handle CAN1 transmission
  * @param pointer to message struct
  */
-void handleCan1transmission(can_t* msg)
+void handleCan1Transmission(can_t* msg)
 {
+#ifdef ___SINGLE_CAN___
+   if (send500ms)   // approx. 500ms 4MHz@1024 prescale factor
+   {
+      send500ms = false;
+
+      sendCan1_500ms(msg);
+   }
+#endif
 }
 
 /**
  * @brief handle CAN2 transmission
  * @param pointer to message struct
  */
-void handleCan2transmission(can_t* msg)
+void handleCan2Transmission(can_t* msg)
 {
    if (send100ms)    // approx. 100ms 4MHz@1024 prescale factor
    {

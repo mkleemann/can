@@ -45,7 +45,7 @@ typedef struct
 
 volatile storeVals_t storage;
 volatile uint16_t    dimSum      = 0x7F;  // start with average
-volatile uint8_t     dimMeasures = 0;     // number of measuremes
+volatile uint8_t     dimMeasures = 0;     // number of measurements
 volatile bool        nightMode   = false; // night mode detection
 
 

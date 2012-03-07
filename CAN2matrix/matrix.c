@@ -404,9 +404,10 @@ void setDimValue(uint8_t value)
    // measurement cycle done
    if(dimMeasures >= DIMMING_MEASURE_CYCLE)
    {
-      storage.dimLevel = dimSum / dimMeasures;
-      dimSum           = storage.dimLevel;
-      dimMeasures      = 0;
+      dimSum           /= dimMeasures;
+      storage.dimLevel  = (storage.dimLevel + dimSum) / 2;
+      dimSum            = storage.dimLevel;
+      dimMeasures       = 0;
    }
 }
 

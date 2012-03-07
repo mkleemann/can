@@ -181,8 +181,9 @@
 /* DEFINITIONS                                                             */
 /***************************************************************************/
 
-// when to switch from day to night mode and vice versa
-#define CAN2_DIM_LEVEL_THRESHOLD       0x45
+// when to switch from day to night mode and vice versa (hysteresis)
+#define DAY_NIGHT_UPPER_LIMIT          0x60
+#define DAY_NIGHT_LOWER_LIMIT          0x40
 
 // when to take over dimming measures - max ~250 (16bit range)
 #define DIMMING_MEASURE_CYCLE          200

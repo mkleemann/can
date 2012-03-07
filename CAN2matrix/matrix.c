@@ -18,6 +18,7 @@
  */
 
 #include <avr/io.h>
+#include <stdbool.h>
 #include "matrix.h"
 
 // Not taken over from CAN2matrix.h!
@@ -44,7 +45,8 @@ typedef struct
 
 volatile storeVals_t storage;
 volatile uint16_t    dimSum      = 0x7F;  // start with average
-volatile uint8_t     dimMeasures = 0;     // number of measurements
+volatile uint8_t     dimMeasures = 0;     // number of measuremes
+volatile bool        nightMode   = false; // night mode detection
 
 
 /***************************************************************************/
@@ -114,7 +116,11 @@ void fillInfoToCAN1(can_t* msg)
          // message is 3 bytes long
          msg->header.len = 3;
          // byte 1 bit 0 - day/night switch
-         msg->data[0] = (storage.dimLevel > CAN2_DIM_LEVEL_THRESHOLD) ? DIM_2_DAY_MODE : DIM_2_NIGHT_MODE;
+         nightMode    = ((false == nightMode) &&
+                         (storage.dimLevel < DAY_NIGHT_LOWER_LIMIT)) ||
+                        ((true == nightMode) &&
+                         (storage.dimLevel < DAY_NIGHT_UPPER_LIMIT));
+         msg->data[0] = (nightMode) ? DIM_2_NIGHT_MODE : DIM_2_DAY_MODE;
          msg->data[1] = storage.dimLevel; // radio
          msg->data[2] = storage.dimLevel; // interior
          break;
@@ -184,7 +190,11 @@ void fillInfoToCAN2(can_t* msg)
          // message is 3 bytes long
          msg->header.len = 3;
          // byte 1 bit 0 - day/night switch
-         msg->data[0] = (storage.dimLevel > CAN2_DIM_LEVEL_THRESHOLD) ? DIM_2_DAY_MODE : DIM_2_NIGHT_MODE;
+         nightMode    = ((false == nightMode) &&
+                         (storage.dimLevel < DAY_NIGHT_LOWER_LIMIT)) ||
+                        ((true == nightMode) &&
+                         (storage.dimLevel < DAY_NIGHT_UPPER_LIMIT));
+         msg->data[0] = (nightMode) ? DIM_2_NIGHT_MODE : DIM_2_DAY_MODE;
          msg->data[1] = storage.dimLevel; // radio
          msg->data[2] = storage.dimLevel; // interior
          break;

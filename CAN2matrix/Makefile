@@ -43,6 +43,7 @@ SUBDIRS :=  \
 ./can \
 ./leds \
 ./bar \
+./adc \
 ./util \
 ./timer \
 ./uart \
@@ -51,7 +52,7 @@ SUBDIRS :=  \
 
 # Add inputs and outputs from these tool invocations to the build variables
 C_SRCS +=  \
-./adc/adc.h \
+./adc/adc.c \
 ./bar/bar.c \
 ./CAN2matrix.c \
 ./can/can_filter_mcp2515.c \
@@ -135,6 +136,36 @@ spi/spi.d \
 timer/timer.d \
 uart/uart.d
 
+TEMPS += \
+adc.i \
+bar.i \
+CAN2matrix.i \
+can_filter_mcp2515.i \
+can_init_mcp2515.i \
+can_receive_mcp2515.i \
+can_sleep_mcp2515.i \
+can_send_mcp2515.i \
+leds.i \
+matrix.i \
+spi.i \
+timer.i \
+uart.i
+
+S_SRCS += \
+adc.s \
+bar.s \
+CAN2matrix.s \
+can_filter_mcp2515.s \
+can_init_mcp2515.s \
+can_receive_mcp2515.s \
+can_sleep_mcp2515.s \
+can_send_mcp2515.s \
+leds.s \
+matrix.s \
+spi.s \
+timer.s \
+uart.s
+
 
 OUTPUT_FILE_PATH +=CAN2matrix.elf
 
@@ -188,46 +219,52 @@ OUTPUT_FILE_DEP:= ./makedep.mk
 
 
 
+adc/%.o: ./adc/%.c
+	@echo Building file: $<
+	@echo Invoking: AVR/GNU C Compiler
+	$(QUOTE)$(AVR_APP_PATH)avr-gcc.exe$(QUOTE) -funsigned-char -funsigned-bitfields -DF_CPU=4000000UL -DMCP_CLOCK=4000000UL  -Os -ffunction-sections -fpack-struct -fshort-enums -Wall -pedantic -c -std=gnu99 -save-temps  -mmcu=atmega8   -MD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o"$@" "$<"
+	@echo Finished building: $<
+
 bar/%.o: ./bar/%.c
 	@echo Building file: $<
 	@echo Invoking: AVR/GNU C Compiler
-	$(QUOTE)$(AVR_APP_PATH)avr-gcc.exe$(QUOTE) -funsigned-char -funsigned-bitfields -DF_CPU=4000000UL -DMCP_CLOCK=4000000UL  -Os -ffunction-sections -fpack-struct -fshort-enums -Wall -pedantic -c -std=gnu99  -mmcu=atmega8   -MD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o"$@" "$<"
+	$(QUOTE)$(AVR_APP_PATH)avr-gcc.exe$(QUOTE) -funsigned-char -funsigned-bitfields -DF_CPU=4000000UL -DMCP_CLOCK=4000000UL  -Os -ffunction-sections -fpack-struct -fshort-enums -Wall -pedantic -c -std=gnu99  -save-temps -mmcu=atmega8   -MD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o"$@" "$<"
 	@echo Finished building: $<
 
 ./%.o: ./%.c
 	@echo Building file: $<
 	@echo Invoking: AVR/GNU C Compiler
-	$(QUOTE)$(AVR_APP_PATH)avr-gcc.exe$(QUOTE) -funsigned-char -funsigned-bitfields -DF_CPU=4000000UL -DMCP_CLOCK=4000000UL  -Os -ffunction-sections -fpack-struct -fshort-enums -Wall -pedantic -c -std=gnu99  -mmcu=atmega8   -MD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o"$@" "$<"
+	$(QUOTE)$(AVR_APP_PATH)avr-gcc.exe$(QUOTE) -funsigned-char -funsigned-bitfields -DF_CPU=4000000UL -DMCP_CLOCK=4000000UL  -Os -ffunction-sections -fpack-struct -fshort-enums -Wall -pedantic -c -std=gnu99  -save-temps -mmcu=atmega8   -MD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o"$@" "$<"
 	@echo Finished building: $<
 
 can/%.o: ./can/%.c
 	@echo Building file: $<
 	@echo Invoking: AVR/GNU C Compiler
-	$(QUOTE)$(AVR_APP_PATH)avr-gcc.exe$(QUOTE) -funsigned-char -funsigned-bitfields -DF_CPU=4000000UL -DMCP_CLOCK=4000000UL  -Os -ffunction-sections -fpack-struct -fshort-enums -Wall -pedantic -c -std=gnu99  -mmcu=atmega8   -MD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o"$@" "$<"
+	$(QUOTE)$(AVR_APP_PATH)avr-gcc.exe$(QUOTE) -funsigned-char -funsigned-bitfields -DF_CPU=4000000UL -DMCP_CLOCK=4000000UL  -Os -ffunction-sections -fpack-struct -fshort-enums -Wall -pedantic -c -std=gnu99  -save-temps -mmcu=atmega8   -MD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o"$@" "$<"
 	@echo Finished building: $<
 
 leds/%.o: ./leds/%.c
 	@echo Building file: $<
 	@echo Invoking: AVR/GNU C Compiler
-	$(QUOTE)$(AVR_APP_PATH)avr-gcc.exe$(QUOTE) -funsigned-char -funsigned-bitfields -DF_CPU=4000000UL -DMCP_CLOCK=4000000UL  -Os -ffunction-sections -fpack-struct -fshort-enums -Wall -pedantic -c -std=gnu99  -mmcu=atmega8   -MD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o"$@" "$<"
+	$(QUOTE)$(AVR_APP_PATH)avr-gcc.exe$(QUOTE) -funsigned-char -funsigned-bitfields -DF_CPU=4000000UL -DMCP_CLOCK=4000000UL  -Os -ffunction-sections -fpack-struct -fshort-enums -Wall -pedantic -c -std=gnu99  -save-temps -mmcu=atmega8   -MD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o"$@" "$<"
 	@echo Finished building: $<
 
 spi/%.o: ./spi/%.c
 	@echo Building file: $<
 	@echo Invoking: AVR/GNU C Compiler
-	$(QUOTE)$(AVR_APP_PATH)avr-gcc.exe$(QUOTE) -funsigned-char -funsigned-bitfields -DF_CPU=4000000UL -DMCP_CLOCK=4000000UL  -Os -ffunction-sections -fpack-struct -fshort-enums -Wall -pedantic -c -std=gnu99  -mmcu=atmega8   -MD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o"$@" "$<"
+	$(QUOTE)$(AVR_APP_PATH)avr-gcc.exe$(QUOTE) -funsigned-char -funsigned-bitfields -DF_CPU=4000000UL -DMCP_CLOCK=4000000UL  -Os -ffunction-sections -fpack-struct -fshort-enums -Wall -pedantic -c -std=gnu99  -save-temps -mmcu=atmega8   -MD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o"$@" "$<"
 	@echo Finished building: $<
 
 timer/%.o: ./timer/%.c
 	@echo Building file: $<
 	@echo Invoking: AVR/GNU C Compiler
-	$(QUOTE)$(AVR_APP_PATH)avr-gcc.exe$(QUOTE) -funsigned-char -funsigned-bitfields -DF_CPU=4000000UL -DMCP_CLOCK=4000000UL  -Os -ffunction-sections -fpack-struct -fshort-enums -Wall -pedantic -c -std=gnu99  -mmcu=atmega8   -MD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o"$@" "$<"
+	$(QUOTE)$(AVR_APP_PATH)avr-gcc.exe$(QUOTE) -funsigned-char -funsigned-bitfields -DF_CPU=4000000UL -DMCP_CLOCK=4000000UL  -Os -ffunction-sections -fpack-struct -fshort-enums -Wall -pedantic -c -std=gnu99  -save-temps -mmcu=atmega8   -MD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o"$@" "$<"
 	@echo Finished building: $<
 
 uart/%.o: ./uart/%.c
 	@echo Building file: $<
 	@echo Invoking: AVR/GNU C Compiler
-	$(QUOTE)$(AVR_APP_PATH)avr-gcc.exe$(QUOTE) -funsigned-char -funsigned-bitfields -DF_CPU=4000000UL -DMCP_CLOCK=4000000UL  -Os -ffunction-sections -fpack-struct -fshort-enums -Wall -pedantic -c -std=gnu99  -mmcu=atmega8   -MD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o"$@" "$<"
+	$(QUOTE)$(AVR_APP_PATH)avr-gcc.exe$(QUOTE) -funsigned-char -funsigned-bitfields -DF_CPU=4000000UL -DMCP_CLOCK=4000000UL  -Os -ffunction-sections -fpack-struct -fshort-enums -Wall -pedantic -c -std=gnu99  -save-temps -mmcu=atmega8   -MD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o"$@" "$<"
 	@echo Finished building: $<
 
 
@@ -271,5 +308,5 @@ size: $(OUTPUT_FILE_PATH)
 
 # Other Targets
 clean:
-	-$(RM) $(OBJS_AS_ARGS)$(C_DEPS_AS_ARGS) $(EXECUTABLES) $(LIB_AS_ARGS) $(HEX_FLASH_FILE_PATH_AS_ARGS) $(HEX_EEPROM_FILE_PATH_AS_ARGS) $(LSS_FILE_PATH_AS_ARGS) $(MAP_FILE_PATH_AS_ARGS) $(OUTPUT_FILE_PATH_AS_ARGS)
+	-$(RM) $(OBJS_AS_ARGS)$(C_DEPS_AS_ARGS) $(EXECUTABLES) $(LIB_AS_ARGS) $(HEX_FLASH_FILE_PATH_AS_ARGS) $(HEX_EEPROM_FILE_PATH_AS_ARGS) $(LSS_FILE_PATH_AS_ARGS) $(MAP_FILE_PATH_AS_ARGS) $(OUTPUT_FILE_PATH_AS_ARGS) $(TEMPS) $(S_SRCS)
 

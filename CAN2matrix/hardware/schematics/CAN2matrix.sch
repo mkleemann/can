@@ -8890,18 +8890,18 @@ Source: http://optoelectronics.perkinelmer.com/content/Datasheets/DTS_Photocells
 <part name="GND10" library="supply1" deviceset="GND" device=""/>
 <part name="GND3" library="supply1" deviceset="GND" device=""/>
 <part name="SV2" library="con-lstb" deviceset="MA03-1" device="" value="Ext Pwr"/>
-<part name="R4" library="resistor" deviceset="R-EU_" device="0207/2V" value="1k"/>
-<part name="R5" library="resistor" deviceset="R-EU_" device="0207/2V" value="1k"/>
-<part name="R6" library="resistor" deviceset="R-EU_" device="0207/2V" value="1k"/>
-<part name="R7" library="resistor" deviceset="R-EU_" device="0207/2V" value="1k"/>
-<part name="R8" library="resistor" deviceset="R-EU_" device="0207/2V" value="1k"/>
+<part name="R4" library="resistor" deviceset="R-EU_" device="0207/10" value="1k"/>
+<part name="R5" library="resistor" deviceset="R-EU_" device="0207/10" value="1k"/>
+<part name="R6" library="resistor" deviceset="R-EU_" device="0207/10" value="1k"/>
+<part name="R7" library="resistor" deviceset="R-EU_" device="0207/10" value="1k"/>
+<part name="R8" library="resistor" deviceset="R-EU_" device="0207/10" value="1k"/>
 <part name="LED1" library="led" deviceset="LED" device="3MM" value="red"/>
 <part name="LED2" library="led" deviceset="LED" device="3MM" value="red"/>
 <part name="LED3" library="led" deviceset="LED" device="3MM" value="green"/>
 <part name="LED4" library="led" deviceset="LED" device="3MM" value="green"/>
 <part name="LED5" library="led" deviceset="LED" device="3MM" value="yellow"/>
 <part name="GND11" library="supply1" deviceset="GND" device=""/>
-<part name="R9" library="resistor" deviceset="R-EU_" device="0207/2V" value="39k"/>
+<part name="R9" library="resistor" deviceset="R-EU_" device="0204/7" value="39k"/>
 <part name="PH1" library="photo-elements" deviceset="A10" device="" technology="50_09"/>
 <part name="P+5" library="supply1" deviceset="+5V" device=""/>
 </parts>
@@ -9068,11 +9068,11 @@ Source: http://optoelectronics.perkinelmer.com/content/Datasheets/DTS_Photocells
 <pinref part="IC1" gate="G$1" pin="PB3(MOSI/OC2)"/>
 <wire x1="-30.48" y1="-15.24" x2="5.08" y2="-15.24" width="0.1524" layer="91"/>
 <junction x="5.08" y="-15.24"/>
-<pinref part="SV1" gate="G$1" pin="1"/>
 <wire x1="5.08" y1="-35.56" x2="-30.48" y2="-35.56" width="0.1524" layer="91"/>
 <wire x1="-30.48" y1="-35.56" x2="-30.48" y2="-63.5" width="0.1524" layer="91"/>
-<wire x1="-30.48" y1="-63.5" x2="-25.4" y2="-63.5" width="0.1524" layer="91"/>
 <junction x="5.08" y="-35.56"/>
+<pinref part="SV1" gate="G$1" pin="1"/>
+<wire x1="-25.4" y1="-63.5" x2="-30.48" y2="-63.5" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$3" class="0">

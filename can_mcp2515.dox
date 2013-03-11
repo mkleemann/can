@@ -1,0 +1,17 @@
+/**
+ * \page page_can_bus CAN Bus
+ *
+ * \section can_ack Acknowledgements
+ *
+ * Most functions and sequences are based on CAN tutorial by Fabian Greif
+ * (http://www.kreatives-chaos.com) and his CAN library. I took the freedom
+ * to adapt and re-write, so I could learn and not only take it as is. You
+ * may have still the feeling, that I did not understand some things fully.
+ * You could be right ;-)
+ *
+ * Nevertheless, without Fabians work, this little project would have taken
+ * much, much longer or may never even finished.
+ *
+ * Thanks!
+ *
+ */

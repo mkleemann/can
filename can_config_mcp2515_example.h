@@ -11,7 +11,7 @@
  *
  * ----------------------------------------------------------------------------
  *
- * \file can_config_mcp2515.h
+ * \file can_config_mcp2515_example.h
  *
  * Here you can add the configuration(s) you need. Some of them are not
  * to be changed without the need of adapting the code itself. Most likely

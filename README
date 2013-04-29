@@ -1,0 +1,43 @@
+AVR module: CAN - using MCP2515 and MCP2551
+================================================================================
+
+A submodule used in other projects. Currently there are no make files available
+so it needs to be included within the buildtree of the host project.
+
+Environment:
+------------
+
+<project path>
+:
+|
++- config
+|  |
+|  +- can_config_mcp2515.c
+|  +- can_config_mcp2515.h
+|  +- spi_config.h
+|
++- can
+|  |
+|  +- <submodule sources>
+|
++- spi
+|  |
+|  +- <submodule sources>
+|
++- util
+   |
+   +- <submodule util files>
+
+Use the following git commands to get the submodule:
+
+# to get the submodule
+git submodule add git@github.com:mkleemann/can.git <path/to/adc/module>
+# commit the submodule to your repository
+git commit
+
+# update your submodule, when needs be
+git submodule update
+
+Have fun!
+
+M.

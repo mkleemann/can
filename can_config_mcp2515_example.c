@@ -11,7 +11,7 @@
  *
  * ----------------------------------------------------------------------------
  *
- * \file can_config_mcp2515.c
+ * \file can_config_mcp2515_example.c
  *
  * \date Created: 11.03.2013 06:10:00
  * \author Matthias Kleemann

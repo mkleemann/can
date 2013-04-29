@@ -1,7 +1,7 @@
 /**
  * \page page_can_bus CAN Bus
  *
- * \section can_ack Acknowledgements
+ * \section sec_can_ack Acknowledgements
  *
  * Most functions and sequences are based on CAN tutorial by Fabian Greif
  * (http://www.kreatives-chaos.com) and his CAN library. I took the freedom
@@ -13,5 +13,69 @@
  * much, much longer or may never even finished.
  *
  * Thanks!
+ *
+ * \section sec_can_usage Usage of CAN Module
+ * \sa page_spi
+ * \sa can_config_mcp2515_example.c, can_config_mcp2515_example.h
+ *
+ * After initialization of the CAN module, the usage is straight forward.
+ * Use the values given by configuration (e.g. chip to use) and the
+ * definitions within the CAN module itself (e.g. mode of operation).
+ *
+ * Example:
+ * \code
+ * #include "modules/can/can_mcp2515.h"
+ * #include "modules/spi/spi.h"
+ *
+ * int main(void)
+ * {
+ *    bool  canInitRetVal = true;
+ *    can_t canMsg;
+ *
+ *    // initialize the hardware SPI
+ *    spi_pin_init();
+ *    spi_master_init();
+ *
+ *    // initialize CAN bus
+ *    canInitRetVal = can_init_mcp2515(CAN_CHIP1,              // chip
+ *                                     CAN_BITRATE_100_KBPS,   // bitrate
+ *                                     NORMAL_MODE);           // mode
+ *
+ *    if(false == canInitRetVal)
+ *    {
+ *       // error handling...
+ *    }
+ *
+ *    // ...do something...
+ *
+ *    // get message from CAN
+ *    if(can_check_message_received(CAN_CHIP1))
+ *    {
+ *       if(can_get_message(CAN_CHIP1, &canMsg))
+ *       {
+ *          // do something with message...
+ *          if(0x2A0 == canMsg.msgId)
+ *          {
+ *             // ...something more...
+ *          }
+ *       }
+ *    }
+ *
+ *    // prepare CAN message
+ *    canMsg.msgId      = 0x2B0;
+ *    canMsg.header.len = 2;
+ *    canMsg.data[0]    = 0x08;
+ *    canMsg.data[1]    = 0x15;
+ *
+ *    // send CAN message
+ *    while(0 == can_send_message(CAN_CHIP1, &canMsg))
+ *    {
+ *       // wait for empty send buffer
+ *       _delay_us(10);
+ *    }
+ *
+ *    return 0;
+ * }
+ * \endcode
  *
  */

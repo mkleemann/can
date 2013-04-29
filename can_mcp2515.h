@@ -160,7 +160,7 @@ typedef enum
  *
  * \par Clock Speed
  * All MCP2515 connected to AVR need to have the same clock speed when
- * using the same bitrate! See array in can_init_mcp2515.c.
+ * using the same bitrate! See array in can_config_mcp2515.c.
  *
  * \par SPI
  * MCP2515 init routine does NOT initializes SPI. This has to be done before.

@@ -25,10 +25,10 @@
 #include <stdbool.h>
 #include <util/delay.h>
 
-#include "../util/util.h"
-#include "../spi/spi.h"
+#include "util/util.h"
+#include "spi/spi.h"
 #include "can_defs_mcp2515.h"
-#include "../config/can_config_mcp2515.h"
+#include "config/can_config_mcp2515.h"
 
 /**************************************************************************/
 /* TYPE DEFINITIONS                                                       */

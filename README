@@ -1,13 +1,15 @@
 AVR module: CAN - using MCP2515 and MCP2551
 ================================================================================
 
-A submodule used in other projects. Currently there are no make files available
-so it needs to be included within the buildtree of the host project.
+A submodule used in other projects. Currently cmake is used to build a library
+of the module. The path structure within the project should be as follows.
+The includes are looked for in the subdirectory "config" and "util" at the same
+level as the adc module.
 
 Environment:
 ------------
 
-<project path>
+<some project path>
 :
 |
 +- config
@@ -37,6 +39,10 @@ git commit
 
 # update your submodule, when needs be
 git submodule update
+
+To use the submodule, you may make use of the cmake-avr toolchain. The
+project has to define the include search path at the parent directory
+of the module.
 
 Have fun!
 

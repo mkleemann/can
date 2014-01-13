@@ -26,7 +26,7 @@
 #ifndef CAN_CONFIG_MCP2515_H_
 #define CAN_CONFIG_MCP2515_H_
 
-#include "../util/util.h"
+#include "util/util.h"
 
 /**************************************************************************/
 /* TYPEDEFINITIONS                                                        */

@@ -3,8 +3,8 @@ AVR module: CAN - using MCP2515 and MCP2551
 
 A submodule used in other projects. Currently cmake is used to build a library
 of the module. The path structure within the project should be as follows.
-The includes are looked for in the subdirectory "config" and "util" at the same
-level as the adc module.
+The includes are looked for in the subdirectory "config", "spi" and "util" at
+the same level as the module.
 
 Environment:
 ------------
@@ -33,7 +33,7 @@ Environment:
 Use the following git commands to get the submodule:
 
 # to get the submodule
-git submodule add git@github.com:mkleemann/can.git <path/to/adc/module>
+git submodule add git@github.com:mkleemann/can.git <path/to/can/module>
 # commit the submodule to your repository
 git commit
 

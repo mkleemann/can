@@ -10,13 +10,13 @@
  * You could be right ;-)
  *
  * Nevertheless, without Fabians work, this little project would have taken
- * much, much longer or may never even finished.
+ * much, much longer or may never even be finished.
  *
  * Thanks!
  *
  * \section sec_can_usage Usage of CAN Module
  * \sa page_spi
- * \sa can_config_mcp2515_example.c, can_config_mcp2515_example.h
+ * \sa can_config_mcp2515.c, can_config_mcp2515.h
  *
  * After initialization of the CAN module, the usage is straight forward.
  * Use the values given by configuration (e.g. chip to use) and the
